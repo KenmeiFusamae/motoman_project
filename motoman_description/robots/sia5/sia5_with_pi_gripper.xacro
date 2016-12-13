@@ -1,0 +1,25 @@
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="sia5">
+
+
+
+
+<!--  File Include  -->
+<xacro:include filename="$(find motoman_description)/robots/sia5/sia5.urdf.xacro"/>
+<xacro:include filename="$(find motoman_description)/robots/sia5/dynamixel_arm_hardware.xacro"/>
+<xacro:include filename="$(find rbx2_description)/urdf/pi_robot/pi_gripper.urdf.xacro"/>
+
+
+
+
+<!-- Attach the right gripper -->
+<gripper side="right" reflect="-1" parent="tool0" color="green">
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</gripper>
+
+
+
+
+
+
+
+</robot>

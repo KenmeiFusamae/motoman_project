@@ -1,0 +1,10 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: motoman_description
+    relative_path: robots/sia5/sia5_with_pi_gripper.urdf
+  SRDF:
+    relative_path: config/sia5.srdf
+  CONFIG:
+    author_name: fusamae
+    author_email: zgmfx2oaf91@gmail.com
+    generated_timestamp: 1481473804

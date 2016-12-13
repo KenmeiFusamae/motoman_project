@@ -1,0 +1,20 @@
+controller_list:
+  - name: sia5_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - joint_s
+      - joint_l
+      - joint_e
+      - joint_u
+      - joint_r
+      - joint_b
+      - joint_t
+  - name: gripper_controller
+    action_ns: gripper_action
+    type: GripperCommand
+    default: true
+    command_joint: gripper_joint
+    joints:
+      - gripper_joint

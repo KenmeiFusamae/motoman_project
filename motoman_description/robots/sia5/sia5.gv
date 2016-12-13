@@ -1,0 +1,50 @@
+digraph G {
+node [shape=box];
+"world" [label="world"];
+"base_link" [label="base_link"];
+"link_s" [label="link_s"];
+"link_l" [label="link_l"];
+"link_e" [label="link_e"];
+"link_u" [label="link_u"];
+"link_r" [label="link_r"];
+"link_b" [label="link_b"];
+"link_t" [label="link_t"];
+"tool0" [label="tool0"];
+"right_gripper_base_link" [label="right_gripper_base_link"];
+"right_gripper_active_finger_bracket_link" [label="right_gripper_active_finger_bracket_link"];
+"right_gripper_active_finger_link" [label="right_gripper_active_finger_link"];
+"right_gripper_link" [label="right_gripper_link"];
+"right_gripper_static_finger_bracket_link" [label="right_gripper_static_finger_bracket_link"];
+"right_gripper_static_finger_link" [label="right_gripper_static_finger_link"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"world" -> "world" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"world" -> "base_link"
+"base_link" -> "joint_s" [label="xyz: 0 0 0.1765 \nrpy: 0 -0 0"]
+"joint_s" -> "link_s"
+"link_s" -> "joint_l" [label="xyz: 0 0.006 0.136 \nrpy: 0 -0 0"]
+"joint_l" -> "link_l"
+"link_l" -> "joint_e" [label="xyz: 0 -0.006 0.15 \nrpy: 0 -0 0"]
+"joint_e" -> "link_e"
+"link_e" -> "joint_u" [label="xyz: 0.085 -0.00826931 0.122753 \nrpy: 1.5708 -0 0"]
+"joint_u" -> "link_u"
+"link_u" -> "joint_r" [label="xyz: 0.131 0.06 -0.008 \nrpy: 3.14159 1.5708 3.14159"]
+"joint_r" -> "link_r"
+"link_r" -> "joint_b" [label="xyz: -0.0045 0 0.139 \nrpy: 3.14159 -1.5708 3.14159"]
+"joint_b" -> "link_b"
+"link_b" -> "joint_t" [label="xyz: 0.1365 0 -0.0045 \nrpy: -1.5708 0 0"]
+"joint_t" -> "link_t"
+"link_t" -> "joint_tool0" [label="xyz: 0.0115 0 0 \nrpy: 0 -0 0"]
+"joint_tool0" -> "tool0"
+"tool0" -> "right_gripper_base_joint" [label="xyz: 0.02275 -0.01 0 \nrpy: 1.57079 -0 0"]
+"right_gripper_base_joint" -> "right_gripper_base_link"
+"right_gripper_base_link" -> "right_gripper_finger_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"right_gripper_finger_joint" -> "right_gripper_active_finger_bracket_link"
+"right_gripper_active_finger_bracket_link" -> "right_gripper_active_finger_joint" [label="xyz: 0 0 0.0265 \nrpy: 0 -0 0"]
+"right_gripper_active_finger_joint" -> "right_gripper_active_finger_link"
+"right_gripper_base_link" -> "right_gripper_joint" [label="xyz: 0.05 0 -0.008 \nrpy: -1.57079 0 0"]
+"right_gripper_joint" -> "right_gripper_link"
+"right_gripper_base_link" -> "right_gripper_static_finger_bracket_joint" [label="xyz: 0 0 -0.0425 \nrpy: 3.14159 2.65359e-06 3.14159"]
+"right_gripper_static_finger_bracket_joint" -> "right_gripper_static_finger_bracket_link"
+"right_gripper_static_finger_bracket_link" -> "right_gripper_static_finger_joint" [label="xyz: 0 0 0 \nrpy: 0 -0 3.14159"]
+"right_gripper_static_finger_joint" -> "right_gripper_static_finger_link"
+}
