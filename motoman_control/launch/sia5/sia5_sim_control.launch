@@ -5,7 +5,7 @@
 
   <!-- load the controllers -->
   <node name="sia5_controller_spawner" pkg="controller_manager"
-		type="spawner" output="screen" 
+		type="spawner" output="screen"
 		args="joint_state_controller
 			  sia5_controller"/>
 

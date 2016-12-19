@@ -20,6 +20,40 @@
   <arg name="jiggle_fraction" default="0.05" />
   <arg name="publish_monitored_planning_scene" default="true"/>
 
+
+
+
+  <!-- From here, there are original arguments -->
+  	<arg name="load_robot_description" default="true"/>
+  	<arg name="urdf_model" default="$(find motoman_description)/robots/sia5/sia5_with_pi_gripper.urdf"/>
+  	<arg name="srdf_model" default="$(find motoman_pi_gripper_moveit_config)/config/sia5.srdf"/>
+  	<arg name="joint_limits_config" default="$(find motoman_pi_gripper_moveit_config)/config/joint_limits.yaml"/>
+  	<arg name="kinematics_config" default="$(find motoman_pi_gripper_moveit_config)/config/kinematics.yaml"/>
+  	<arg name="controllers_config" default="$(find motoman_pi_gripper_moveit_config)/config/controllers.yaml"/>
+
+
+  	<!-- Call planning context -->
+  	<include file="$(find motoman_pi_gripper_moveit_config)/launch/planning_context.launch" >
+  	<arg name="load_robot_description" value="$(arg load_robot_description)"/>
+  	<arg name="urdf_model" value="$(arg urdf_model)"/>
+  	<arg name="srdf_model" value="$(arg srdf_model)"/>
+  	<arg name="joint_limits_config" value="$(arg joint_limits_config)"/>
+  	<arg name="kinematics_config" value="$(arg kinematics_config)"/>
+  	</include>
+
+
+
+    <!-- end -->
+
+
+
+
+
+
+
+
+
+
   <!-- Planning Functionality -->
   <include ns="move_group" file="$(find motoman_pi_gripper_moveit_config)/launch/planning_pipeline.launch.xml">
     <arg name="pipeline" value="ompl" />
