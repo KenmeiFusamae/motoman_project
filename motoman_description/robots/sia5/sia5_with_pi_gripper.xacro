@@ -6,8 +6,8 @@
 <!--  File Include  -->
 <xacro:include filename="$(find motoman_description)/robots/sia5/sia5.urdf.xacro"/>
 <xacro:include filename="$(find motoman_description)/robots/sia5/dynamixel_arm_hardware.xacro"/>
-<xacro:include filename="$(find rbx2_description)/urdf/pi_robot/pi_gripper.urdf.xacro"/>
-
+<!--<xacro:include filename="$(find rbx2_description)/urdf/pi_robot/pi_gripper.urdf.xacro"/> -->
+<xacro:include filename="$(find motoman_description)/urdf/tool/pi_gripper.urdf.xacro"/>
 
 
 

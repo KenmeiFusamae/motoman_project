@@ -43,6 +43,6 @@
         <param name="publish_frequency" type="double" value="20.0" />
     </node>
 
-    <node name="rviz" pkg="rviz" type="rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args = "-d $(find motoman_bringup)/motoman_pi_gripper.rviz" required="true"/>
 
 </launch>
