@@ -1,28 +1,11 @@
 #!/usr/bin/env python
+# coding: UTF-8
 
-"""
-    moveit_pick_and_place_demo.py - Version 0.1 2014-01-14
-
-    Command the gripper to grasp a target object and move it to a new location, all
-    while avoiding simulated obstacles.
-
-    Created for the Pi Robot Project: http://www.pirobot.org
-    Copyright (c) 2014 Patrick Goebel.  All rights reserved.
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.5
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details at:
-
-    http://www.gnu.org/licenses/gpl.html
-"""
-
+import math
 import rospy, sys
 import moveit_commander
+import tf2_ros
+import tf
 from geometry_msgs.msg import PoseStamped, Pose
 from moveit_commander import MoveGroupCommander, PlanningSceneInterface
 from moveit_msgs.msg import PlanningScene, ObjectColor
@@ -32,7 +15,7 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 from copy import deepcopy
 
-GROUP_NAME_ARM = 'arm'
+GROUP_NAME_ARM = 'right_arm'
 GROUP_NAME_GRIPPER = 'right_gripper'
 
 GRIPPER_FRAME = 'right_gripper_link'
@@ -121,6 +104,29 @@ class MoveItDemo:
         right_arm.set_named_target('default')
         right_arm.go()
 
+#----------------gripper 向き変更----------------------------------------------
+        print "-----------  change gripper pose------------"
+        target_pose = PoseStamped()
+        target_pose.header.frame_id =  REFERENCE_FRAME
+        target_pose.pose.position.x = 0.4
+        target_pose.pose.position.y = 0
+        target_pose.pose.position.z = 0.5
+        target_pose.pose.orientation.w = 1.0
+        rolll = 0
+        pitch = 0
+        yaw = -math.pi/2
+        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        target_pose.pose.orientation.x = tar_q[0]
+        target_pose.pose.orientation.y = tar_q[1]
+        target_pose.pose.orientation.z = tar_q[2]
+        target_pose.pose.orientation.w = tar_q[3]
+        # Set the start state to the current state
+        right_arm.set_start_state_to_current_state()
+        # Set the goal pose of the end effector to the stored pose
+        right_arm.set_pose_target(target_pose, end_effector_link)
+        right_arm.go()
+
+#--------------------------------------------------------------
         # Open the gripper to the neutral position
         right_gripper.set_joint_value_target(GRIPPER_NEUTRAL)
         right_gripper.go()
@@ -153,7 +159,20 @@ class MoveItDemo:
         box1_pose.pose.position.y = -0.1
         box1_pose.pose.position.z = table_ground + table_size[2] + box1_size[2] / 2.0
         box1_pose.pose.orientation.w = 1.0
-        scene.add_box(box1_id, box1_pose, box1_size)
+#------------------   box の向きを変える　　ｚ座標は調整する必要あり-------------------------------------------------------------------
+        rolll = 0
+        pitch = math.pi
+        yaw = 0
+        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        box1_pose.pose.orientation.x = tar_q[0]
+        box1_pose.pose.orientation.y = tar_q[1]
+        box1_pose.pose.orientation.z = tar_q[2]
+        box1_pose.pose.orientation.w = tar_q[3]
+        # box1_pose.pose.position.z = table_ground + table_size[2] + box1_size[0] / 2.0
+        # print "---------------------------------------------------------"
+        # print box1_pose
+#------------------------------------------------------------------------------------------------
+        # scene.add_box(box1_id, box1_pose, box1_size)
 
         box2_pose = PoseStamped()
         box2_pose.header.frame_id = REFERENCE_FRAME
@@ -161,7 +180,7 @@ class MoveItDemo:
         box2_pose.pose.position.y = 0.13
         box2_pose.pose.position.z = table_ground + table_size[2] + box2_size[2] / 2.0
         box2_pose.pose.orientation.w = 1.0
-        scene.add_box(box2_id, box2_pose, box2_size)
+        # scene.add_box(box2_id, box2_pose, box2_size)
 
         # Set the target pose in between the boxes and on the table
         target_pose = PoseStamped()
@@ -193,11 +212,29 @@ class MoveItDemo:
         place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         place_pose.pose.orientation.w = 1.0
 
-        # Initialize the grasp pose to the target pose
-        grasp_pose = target_pose
+#--------------- Initialize the grasp pose to the target pose ----------------------------------------
+        # grasp_pose = target_pose
+
+        grasp_pose = PoseStamped()
+        grasp_pose.header.frame_id = REFERENCE_FRAME
+        grasp_pose.pose.position.x = target_pose.pose.position.x
+        grasp_pose.pose.position.y = target_pose.pose.position.y
+        grasp_pose.pose.position.z = target_pose.pose.position.z
+        rolll = 0
+        pitch = 0
+        yaw = -math.pi/2
+        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        grasp_pose.pose.orientation.x = tar_q[0]
+        grasp_pose.pose.orientation.y = tar_q[1]
+        grasp_pose.pose.orientation.z = tar_q[2]
+        grasp_pose.pose.orientation.w = tar_q[3]
+
+
 
         # Shift the grasp pose by half the width of the target to center it
         grasp_pose.pose.position.y -= target_size[1] / 2.0
+
+#---------------------------------------------------------------------------------
 
         # Generate a list of grasps
         grasps = self.make_grasps(grasp_pose, [target_id])

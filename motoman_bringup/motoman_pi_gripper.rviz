@@ -6,7 +6,9 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
-        - /RobotModel1
+        - /MotionPlanning1
+        - /MotionPlanning1/Scene Robot1
+        - /MotionPlanning1/Planning Metrics1
         - /MotionPlanning1/Planned Path1
       Splitter Ratio: 0.494172
     Tree Height: 565
@@ -53,96 +55,18 @@ Visualization Manager:
     - Alpha: 1
       Class: rviz/RobotModel
       Collision Enabled: false
-      Enabled: true
+      Enabled: false
       Links:
         All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
         Link Tree Style: Links in Alphabetic Order
-        base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_b:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_e:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_l:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_r:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_s:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_t:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        link_u:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_active_finger_bracket_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_active_finger_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_base_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_static_finger_bracket_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        right_gripper_static_finger_link:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-          Value: true
-        tool0:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
       Name: RobotModel
       Robot Description: robot_description
       TF Prefix: ""
       Update Interval: 0
-      Value: true
+      Value: false
       Visual Enabled: true
     - Class: moveit_rviz_plugin/MotionPlanning
       Enabled: true
@@ -282,7 +206,7 @@ Visualization Manager:
       Scene Geometry:
         Scene Alpha: 0.9
         Scene Color: 50; 230; 50
-        Scene Display Time: 0.2
+        Scene Display Time: 0.1
         Show Scene Geometry: true
         Voxel Coloring: Z-Axis
         Voxel Rendering: Occupied Voxels
@@ -374,7 +298,15 @@ Visualization Manager:
             Show Trail: false
         Robot Alpha: 1
         Show Robot Collision: false
-        Show Robot Visual: false
+        Show Robot Visual: true
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: visualization_marker
+      Name: Marker
+      Namespaces:
+        {}
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -412,10 +344,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.595398
+      Pitch: 0.705398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.495398
+      Yaw: 0.0153982
     Saved: ~
 Window Geometry:
   Displays:
@@ -435,5 +367,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 391
-  Y: 289
+  X: 787
+  Y: 370

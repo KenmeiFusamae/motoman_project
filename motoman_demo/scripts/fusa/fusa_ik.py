@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
+import math
 import rospy, sys
+import tf2_ros
+import tf
 import moveit_commander
 from moveit_msgs.msg import RobotTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
@@ -39,15 +42,22 @@ class MoveItDemo:
         right_arm.go()
         rospy.sleep(2)
 
+#--------------------------------------------------------------
+        right_arm.shift_pose_target(4, -1.57, end_effector_link)
+        right_arm.go()
+        rospy.sleep(1)
+#--------------------------------------------------------------
+
         # Set the target pose.  This particular pose has the gripper oriented horizontally
         # 0.85 meters above the ground, 0.10 meters to the right and 0.20 meters ahead of
         # the center of the robot base.
+
         target_pose = PoseStamped()
         target_pose.header.frame_id = reference_frame
         target_pose.header.stamp = rospy.Time.now()
-        target_pose.pose.position.x = 0.30
-        target_pose.pose.position.y = -0.1
-        target_pose.pose.position.z = 0.7
+        target_pose.pose.position.x = 0.4
+        target_pose.pose.position.y = -0.2
+        target_pose.pose.position.z = 0.5
         target_pose.pose.orientation.x = 0.0
         target_pose.pose.orientation.y = 0.0
         target_pose.pose.orientation.z = 0.0
@@ -55,18 +65,39 @@ class MoveItDemo:
 
         # Set the start state to the current state
         right_arm.set_start_state_to_current_state()
-
         # Set the goal pose of the end effector to the stored pose
         right_arm.set_pose_target(target_pose, end_effector_link)
-
         # Plan the trajectory to the goal
         traj = right_arm.plan()
-
         # Execute the planned trajectory
         right_arm.execute(traj)
-
         # Pause for a second
         rospy.sleep(1)
+
+#-----------------------------------------------------------------------------
+        print "------------   change gripper pose  -----------------"
+        grasp_pose = PoseStamped()
+        grasp_pose.header.frame_id = reference_frame
+        grasp_pose.pose.position.x = target_pose.pose.position.x +0.1
+        grasp_pose.pose.position.y = target_pose.pose.position.y
+        grasp_pose.pose.position.z = target_pose.pose.position.z
+        rolll = 0
+        pitch = 0
+        yaw = - math.pi/2
+        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        grasp_pose.pose.orientation.x = tar_q[0]
+        grasp_pose.pose.orientation.y = tar_q[1]
+        grasp_pose.pose.orientation.z = tar_q[2]
+        grasp_pose.pose.orientation.w = tar_q[3]
+
+        right_arm.set_pose_target(grasp_pose, end_effector_link)
+        right_arm.go()
+
+
+#-----------------------------------------------------------------------------
+
+
+
 
         # Shift the end-effector to the right 5cm
         right_arm.shift_pose_target(1, -0.05, end_effector_link)
