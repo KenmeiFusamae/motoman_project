@@ -209,8 +209,15 @@ class MoveItDemo:
         place_pose.header.frame_id = REFERENCE_FRAME
         place_pose.pose.position.x = 0.33 + 0.1
         place_pose.pose.position.y = -0.18
-        place_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        place_pose.pose.orientation.w = 1.0
+        place_pose.pose.position.z = table_ground + table_size[2] + target_size[1] / 2.0
+        rolll = math.pi/2
+        pitch = 0
+        yaw = 0
+        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        place_pose.pose.orientation.x = tar_q[0]
+        place_pose.pose.orientation.y = tar_q[1]
+        place_pose.pose.orientation.z = tar_q[2]
+        place_pose.pose.orientation.w = tar_q[3]
 
 #--------------- Initialize the grasp pose to the target pose ----------------------------------------
         # grasp_pose = target_pose
@@ -231,7 +238,7 @@ class MoveItDemo:
 
 
 
-        # Shift the grasp pose by half the width of the target to center it
+        # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
         grasp_pose.pose.position.y -= target_size[1] / 2.0
         print "---------- grasp_pose ---------------"
         print grasp_pose.pose.orientation.x
@@ -259,8 +266,6 @@ class MoveItDemo:
             n_attempts += 1
             rospy.loginfo("Pick attempt: " +  str(n_attempts))
             result = right_arm.pick(target_id, grasps)
-            print "-------- grasps pose -------"
-            print grasps
             rospy.sleep(0.2)
 
         # If the pick was successful, attempt the place operation
@@ -408,22 +413,26 @@ class MoveItDemo:
         # Return the list
         return grasps
 
-    # Generate a list of possible place poses
+    # Generate a list of possible place poses  place_poseを受け取る
     def make_places(self, init_pose):
-        # Initialize the place location as a PoseStamped message
+        # Initialize the place location as a PoseStamped message  Grasp()をつかってない、物体の姿勢だけ
         place = PoseStamped()
 
-        # Start with the input place pose
+        # Start with the input place pose ここクオータニオン
         place = init_pose
 
         # A list of x shifts (meters) to try
         x_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
-
         # A list of y shifts (meters) to try
         y_vals = [0, 0.005, 0.01, 0.015, -0.005, -0.01, -0.015]
 
+        # ここオイラー
+        quat = (place.pose.orientation.x,
+                place.pose.orientation.y,
+                place.pose.orientation.z,
+                place.pose.orientation.w,)
+        (roll,pitch,yaw) = tf.transformations.euler_from_quaternion(quat)
         pitch_vals = [0]
-
         # A list of yaw angles to try
         yaw_vals = [0]
 
@@ -439,7 +448,7 @@ class MoveItDemo:
                         place.pose.position.y = init_pose.pose.position.y + y
 
                         # Create a quaternion from the Euler angles
-                        q = quaternion_from_euler(0, p, y)
+                        q = quaternion_from_euler(roll, p, y)
 
                         # Set the place pose orientation accordingly
                         place.pose.orientation.x = q[0]
