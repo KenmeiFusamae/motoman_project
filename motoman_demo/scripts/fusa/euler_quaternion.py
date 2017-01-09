@@ -51,6 +51,7 @@ class MoveItDemo:
 
         # Initialize the move group for the right arm
         right_arm = MoveGroupCommander(GROUP_NAME_ARM)
+        right_arm.set_planner_id('RRTConnectkConfigDefault')
 
         # Initialize the move group for the right gripper
         right_gripper = MoveGroupCommander(GROUP_NAME_GRIPPER)
@@ -106,25 +107,25 @@ class MoveItDemo:
 
 #----------------gripper 向き変更----------------------------------------------
         print "-----------  change gripper pose------------"
-        target_pose = PoseStamped()
-        target_pose.header.frame_id =  REFERENCE_FRAME
-        target_pose.pose.position.x = 0.4
-        target_pose.pose.position.y = 0
-        target_pose.pose.position.z = 0.5
-        target_pose.pose.orientation.w = 1.0
-        rolll = 0
-        pitch = 0
-        yaw = -math.pi/2
-        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
-        target_pose.pose.orientation.x = tar_q[0]
-        target_pose.pose.orientation.y = tar_q[1]
-        target_pose.pose.orientation.z = tar_q[2]
-        target_pose.pose.orientation.w = tar_q[3]
-        # Set the start state to the current state
-        right_arm.set_start_state_to_current_state()
-        # Set the goal pose of the end effector to the stored pose
-        right_arm.set_pose_target(target_pose, end_effector_link)
-        right_arm.go()
+        # target_pose = PoseStamped()
+        # target_pose.header.frame_id =  REFERENCE_FRAME
+        # target_pose.pose.position.x = 0.3
+        # target_pose.pose.position.y = 0
+        # target_pose.pose.position.z = 0.2
+        # target_pose.pose.orientation.w = 1.0
+        # rolll = 0
+        # pitch = 0
+        # yaw = math.pi
+        # tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        # target_pose.pose.orientation.x = tar_q[0]
+        # target_pose.pose.orientation.y = tar_q[1]
+        # target_pose.pose.orientation.z = tar_q[2]
+        # target_pose.pose.orientation.w = tar_q[3]
+        # # Set the start state to the current state
+        # right_arm.set_start_state_to_current_state()
+        # # Set the goal pose of the end effector to the stored pose
+        # right_arm.set_pose_target(target_pose, end_effector_link)
+        # right_arm.go()
 
 #--------------------------------------------------------------
         # Open the gripper to the neutral position
@@ -137,7 +138,7 @@ class MoveItDemo:
         table_ground = 0.2
 
         # Set the dimensions of the scene objects [l, w, h]
-        table_size = [0.2, 0.7, 0.01]
+        table_size = [0.5, 0.7, 0.01]
         box1_size = [0.1, 0.05, 0.05]
         box2_size = [0.05, 0.05, 0.15]
 
@@ -229,7 +230,7 @@ class MoveItDemo:
         grasp_pose.pose.position.z = target_pose.pose.position.z
         rolll = 0
         pitch = 0
-        yaw = -math.pi/2
+        yaw = - 3*math.pi/2
         tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
         grasp_pose.pose.orientation.x = tar_q[0]
         grasp_pose.pose.orientation.y = tar_q[1]
@@ -240,7 +241,7 @@ class MoveItDemo:
 
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
         grasp_pose.pose.position.y -= target_size[1] / 2.0
-        print "---------- grasp_pose ---------------"
+        print "---------- initial_grasp_pose ---------------"
         print grasp_pose.pose.orientation.x
         print grasp_pose.pose.orientation.y
         print grasp_pose.pose.orientation.z
@@ -378,7 +379,7 @@ class MoveItDemo:
         pitch_vals = [pitch, pitch+0.1, pitch-0.1, pitch+0.2, pitch-0.2, pitch+0.3, pitch-0.3]
 
         # Yaw angles to try
-        yaw_vals = [yaw]
+        yaw_vals = [yaw, yaw+0.1, yaw-0.1, yaw+0.2, yaw-0.2, yaw+0.3, yaw-0.3]
 
         # A list to hold the grasps
         grasps = []
@@ -387,7 +388,7 @@ class MoveItDemo:
         for y in yaw_vals:
             for p in pitch_vals:
                 # Create a quaternion from the Euler angles (roll, pitch, yaw)
-                q = quaternion_from_euler(0, p, y)
+                q = quaternion_from_euler(roll, p, y)
 
                 # Set the grasp pose orientation accordingly
                 g.grasp_pose.pose.orientation.x = q[0]
@@ -432,9 +433,10 @@ class MoveItDemo:
                 place.pose.orientation.z,
                 place.pose.orientation.w,)
         (roll,pitch,yaw) = tf.transformations.euler_from_quaternion(quat)
-        pitch_vals = [0]
+        pitch_vals = [pitch, pitch+0.1, pitch-0.1, pitch+0.2, pitch-0.2, pitch+0.3, pitch-0.3]
         # A list of yaw angles to try
-        yaw_vals = [0]
+        yaw_vals = [yaw, yaw+0.1, yaw-0.1, yaw+0.2, yaw-0.2, yaw+0.3, yaw-0.3]
+        roll_vals = [roll, roll+0.1, roll-0.1, roll+0.2, roll-0.2, roll+0.3, roll-0.3]
 
         # A list to hold the places
         places = []
@@ -442,22 +444,23 @@ class MoveItDemo:
         # Generate a place pose for each angle and translation
         for y in yaw_vals:
             for p in pitch_vals:
-                for y in y_vals:
-                    for x in x_vals:
-                        place.pose.position.x = init_pose.pose.position.x + x
-                        place.pose.position.y = init_pose.pose.position.y + y
+                for r in roll_vals:
+                    for y in y_vals:
+                        for x in x_vals:
+                            place.pose.position.x = init_pose.pose.position.x + x
+                            place.pose.position.y = init_pose.pose.position.y + y
 
-                        # Create a quaternion from the Euler angles
-                        q = quaternion_from_euler(roll, p, y)
+                            # Create a quaternion from the Euler angles
+                            q = quaternion_from_euler(roll, p, y)
 
-                        # Set the place pose orientation accordingly
-                        place.pose.orientation.x = q[0]
-                        place.pose.orientation.y = q[1]
-                        place.pose.orientation.z = q[2]
-                        place.pose.orientation.w = q[3]
+                            # Set the place pose orientation accordingly
+                            place.pose.orientation.x = q[0]
+                            place.pose.orientation.y = q[1]
+                            place.pose.orientation.z = q[2]
+                            place.pose.orientation.w = q[3]
 
-                        # Append this place pose to the list
-                        places.append(deepcopy(place))
+                            # Append this place pose to the list
+                            places.append(deepcopy(place))
 
         # Return the list
         return places

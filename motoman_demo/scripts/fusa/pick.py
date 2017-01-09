@@ -114,7 +114,7 @@ class MoveItDemo:
         target_pose.pose.orientation.w = 1.0
         rolll = 0
         pitch = 0
-        yaw = -math.pi/2
+        yaw = math.pi/2
         tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
         target_pose.pose.orientation.x = tar_q[0]
         target_pose.pose.orientation.y = tar_q[1]
