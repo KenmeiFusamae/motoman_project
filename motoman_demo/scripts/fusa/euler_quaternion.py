@@ -15,6 +15,8 @@ from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from tf.transformations import quaternion_from_euler
 from copy import deepcopy
 
+import fusa_func as fuf
+
 GROUP_NAME_ARM = 'arm'
 GROUP_NAME_GRIPPER = 'right_gripper'
 
@@ -107,6 +109,7 @@ class MoveItDemo:
 
 #----------------gripper 向き変更----------------------------------------------
         print "-----------  change gripper pose------------"
+        fuf.printHello('world')
         # target_pose = PoseStamped()
         # target_pose.header.frame_id =  REFERENCE_FRAME
         # target_pose.pose.position.x = 0.3
@@ -129,7 +132,7 @@ class MoveItDemo:
 
 #--------------------------------------------------------------
         # Open the gripper to the neutral position
-        right_gripper.set_joint_value_target(GRIPPER_NEUTRAL)
+        right_gripper.set_joint_value_target(GRIPPER_OPEN)
         right_gripper.go()
 
         rospy.sleep(1)
@@ -143,7 +146,7 @@ class MoveItDemo:
         box2_size = [0.05, 0.05, 0.15]
 
         # Set the target size [l, w, h]
-        target_size = [0.02, 0.01, 0.12]
+        target_size = [0.04, 0.03, 0.12]
 
         # Add a table top and two boxes to the scene
         table_pose = PoseStamped()
@@ -202,7 +205,7 @@ class MoveItDemo:
         # Send the colors to the planning scene
         self.sendColors()
 
-        # Set the support surface name to the table object
+        # Set the support surface name to the table object 衝突を無視って言ってるけど、テーブルにアームが当たる状態だと無理なんだけど
         right_arm.set_support_surface_name(table_id)
 
         # Specify a pose to place the target after being picked up
@@ -222,21 +225,26 @@ class MoveItDemo:
 
 #--------------- Initialize the grasp pose to the target pose ----------------------------------------
         # grasp_pose = target_pose
+        current_pose = PoseStamped()
+        #current_pose = right_gripper.get_current_pose().pose
+        print "---------- current_pose -----------"
+        print current_pose
 
         grasp_pose = PoseStamped()
-        grasp_pose.header.frame_id = REFERENCE_FRAME
-        grasp_pose.pose.position.x = target_pose.pose.position.x
-        grasp_pose.pose.position.y = target_pose.pose.position.y
-        grasp_pose.pose.position.z = target_pose.pose.position.z
-        rolll = 0
-        pitch = 0
-        yaw = - 3*math.pi/2
-        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
-        grasp_pose.pose.orientation.x = tar_q[0]
-        grasp_pose.pose.orientation.y = tar_q[1]
-        grasp_pose.pose.orientation.z = tar_q[2]
-        grasp_pose.pose.orientation.w = tar_q[3]
+        # grasp_pose.header.frame_id = REFERENCE_FRAME
+        # grasp_pose.pose.position.x = target_pose.pose.position.x
+        # grasp_pose.pose.position.y = target_pose.pose.position.y
+        # grasp_pose.pose.position.z = target_pose.pose.position.z
+        # rolll = 0
+        # pitch = math.pi/2
+        # yaw =  math.pi/2
+        # tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+        # grasp_pose.pose.orientation.x = tar_q[0]
+        # grasp_pose.pose.orientation.y = tar_q[1]
+        # grasp_pose.pose.orientation.z = tar_q[2]
+        # grasp_pose.pose.orientation.w = tar_q[3]
 
+        grasp_pose = fuf.grasp_pose_5(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
 
 
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
