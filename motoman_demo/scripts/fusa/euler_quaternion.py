@@ -189,8 +189,8 @@ class MoveItDemo:
         # Set the target pose in between the boxes and on the table
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.pose.position.x = 0.37 + 0.1
-        target_pose.pose.position.y = 0.0
+        target_pose.pose.position.x = 0.47
+        target_pose.pose.position.y = 0.0 #0.0
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         target_pose.pose.orientation.w = 1.0
         # Add the target object to the scene
@@ -225,12 +225,40 @@ class MoveItDemo:
 
 #--------------- Initialize the grasp pose to the target pose ----------------------------------------
         # grasp_pose = target_pose
-        current_pose = PoseStamped()
-        #current_pose = right_gripper.get_current_pose().pose
-        print "---------- current_pose -----------"
-        print current_pose
+        init_pose = PoseStamped()
+        init_pose = right_arm.get_current_pose() #.pose
+        init_pose_quat = (init_pose.pose.orientation.x,
+                          init_pose.pose.orientation.y,
+                          init_pose.pose.orientation.z,
+                          init_pose.pose.orientation.w,)
+        (init_roll,init_pitch,init_yaw) = tf.transformations.euler_from_quaternion(init_pose_quat)
+        print "---------- init_pose -----------"
+        print init_pose
 
         grasp_pose = PoseStamped()
+        dist_list = [] #dist_min  dist_maxのため
+        for num in range(1,7):
+            grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+            dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
+                                 grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
+            dist_list.append(dist)
+            
+        print dist_list
+        dist_list.sort()
+        print dist_list
+
+        for num in range(1,7):
+            #print "num = %d" % num
+            grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+            dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
+                                 grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
+
+            print "grasp_roll, grasp_pitch, grasp_yaw = %f %f %f " %(grasp_roll, grasp_pitch, grasp_yaw)
+            deg = fuf.calc_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw)
+            print "deg = %f " % deg
+
+        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_6(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
+
         # grasp_pose.header.frame_id = REFERENCE_FRAME
         # grasp_pose.pose.position.x = target_pose.pose.position.x
         # grasp_pose.pose.position.y = target_pose.pose.position.y
@@ -244,16 +272,13 @@ class MoveItDemo:
         # grasp_pose.pose.orientation.z = tar_q[2]
         # grasp_pose.pose.orientation.w = tar_q[3]
 
-        grasp_pose = fuf.grasp_pose_5(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
+        #grasp_pose = fuf.grasp_pose_5(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
 
 
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
-        grasp_pose.pose.position.y -= target_size[1] / 2.0
-        print "---------- initial_grasp_pose ---------------"
-        print grasp_pose.pose.orientation.x
-        print grasp_pose.pose.orientation.y
-        print grasp_pose.pose.orientation.z
-        print grasp_pose.pose.orientation.w
+        #grasp_pose.pose.position.y -= target_size[1] / 2.0
+        print "---------- 	execute_grasp_pose ---------------"
+        print grasp_pose
 
 
 #---------------------------------------------------------------------------------

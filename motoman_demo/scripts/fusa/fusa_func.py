@@ -2,6 +2,7 @@
 # coding: UTF-8
 
 import math
+import numpy as np
 import rospy, sys
 import moveit_commander
 import tf2_ros
@@ -25,129 +26,122 @@ def grasp_pose_1(x, y, z):
     grasp_pose.header.frame_id = REFERENCE_FRAME
     grasp_pose.pose.position.x = x
     grasp_pose.pose.position.y = y
-    grasp_pose.pose.position.z = z
-    rolll = 0
+    grasp_pose.pose.position.z = z + 0.06
+    roll = 0
     pitch = math.pi/2
     yaw =  0
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
     print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
 
 def grasp_pose_2(x, y, z):
     grasp_pose = PoseStamped()
     grasp_pose.header.frame_id = REFERENCE_FRAME
     grasp_pose.pose.position.x = x
     grasp_pose.pose.position.y = y
-    grasp_pose.pose.position.z = z
-    rolll = 0
+    grasp_pose.pose.position.z = z + 0.06
+    roll = 0
     pitch = math.pi/2
     yaw =  math.pi/2
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
-    print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "------- grasp_pose_2 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
 
 def grasp_pose_3(x, y, z):
     grasp_pose = PoseStamped()
     grasp_pose.header.frame_id = REFERENCE_FRAME
     grasp_pose.pose.position.x = x
-    grasp_pose.pose.position.y = y
+    grasp_pose.pose.position.y = y - 0.015
     grasp_pose.pose.position.z = z
-    rolll = 0
+    roll = 0
     pitch = 0
     yaw =  math.pi/2  #-3*math.pi/2
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
-    print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "------- grasp_pose_3 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
 
 def grasp_pose_4(x, y, z):
     grasp_pose = PoseStamped()
     grasp_pose.header.frame_id = REFERENCE_FRAME
-    grasp_pose.pose.position.x = x
+    grasp_pose.pose.position.x = x - 0.02
     grasp_pose.pose.position.y = y
     grasp_pose.pose.position.z = z
-    rolll = 0
+    roll = 0
     pitch = 0
     yaw =  0
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
-    print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "------- grasp_pose_4 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
 
 def grasp_pose_5(x, y, z):
     grasp_pose = PoseStamped()
     grasp_pose.header.frame_id = REFERENCE_FRAME
     grasp_pose.pose.position.x = x
-    grasp_pose.pose.position.y = y
+    grasp_pose.pose.position.y = y + 0.015
     grasp_pose.pose.position.z = z
-    rolll = 0
+    roll = 0
     pitch = 0
     yaw =  -math.pi/2
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
-    print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "------- grasp_pose_5 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
 
 def grasp_pose_6(x, y, z):
     grasp_pose = PoseStamped()
     grasp_pose.header.frame_id = REFERENCE_FRAME
-    grasp_pose.pose.position.x = x
+    grasp_pose.pose.position.x = x + 0.02
     grasp_pose.pose.position.y = y
     grasp_pose.pose.position.z = z
-    rolll = 0
+    roll = 0
     pitch = 0
     yaw =  math.pi
-    tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
     grasp_pose.pose.orientation.z = tar_q[2]
     grasp_pose.pose.orientation.w = tar_q[3]
-    print "------- grasp_pose_1 -----------"
-    print grasp_pose.pose.orientation.x
-    print grasp_pose.pose.orientation.y
-    print grasp_pose.pose.orientation.z
-    print grasp_pose.pose.orientation.w
+    print "------- grasp_pose_6 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
 
-    return grasp_pose
+    return grasp_pose, roll, pitch, yaw
+
+def calc_dist(x1, y1, z1, x2, y2, z2):
+    a = np.array([x1,y1,z1])
+    b = np.array([x2,y2,z2])
+    dist = np.linalg.norm(b-a)
+    print "dist = %f " % dist
+    return dist
+
+def calc_deg(init_roll, init_pitch, init_yaw, grasp_roll, grasp_pitch, grasp_yaw):
+    deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
+    return deg
