@@ -242,22 +242,41 @@ class MoveItDemo:
             dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
                                  grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
             dist_list.append(dist)
-            
+
         print dist_list
         dist_list.sort()
         print dist_list
+        print "dist_list[0] = %f" % dist_list[0]
+        print "dist_list[6] = %f" % dist_list[5]
+        dist_min = dist_list[0]
+        dist_max = dist_list[5]
 
+        E_list = []
         for num in range(1,7):
             #print "num = %d" % num
             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
             dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
                                  grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
+            e_dist = fuf.calc_e_dist(dist, dist_min, dist_max )
 
             print "grasp_roll, grasp_pitch, grasp_yaw = %f %f %f " %(grasp_roll, grasp_pitch, grasp_yaw)
             deg = fuf.calc_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw)
             print "deg = %f " % deg
+            e_deg = fuf.calc_e_deg(deg)
 
-        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_6(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
+            E = 0.3*e_dist + 0.7*e_deg
+            tp =(num, E)
+            E_list.append(tp)
+            print "E = %f" % E
+            print E_list
+
+        E_list = sorted(E_list, key = lambda x:x[1], reverse = True)
+        print "----------  E_list -----------"
+        print E_list
+        print E_list[0][0]
+
+
+        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
         # grasp_pose.header.frame_id = REFERENCE_FRAME
         # grasp_pose.pose.position.x = target_pose.pose.position.x
