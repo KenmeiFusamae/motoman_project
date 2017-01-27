@@ -192,7 +192,14 @@ class MoveItDemo:
         target_pose.pose.position.x = 0.47
         target_pose.pose.position.y = 0.0 #0.0
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
-        target_pose.pose.orientation.w = 1.0
+        target_roll = 0
+        target_pitch = 0
+        target_yaw = 0
+        target_q = tf.transformations.quaternion_from_euler(target_roll, target_pitch, target_yaw)
+        target_pose.pose.orientation.x = target_q[0]
+        target_pose.pose.orientation.y = target_q[1]
+        target_pose.pose.orientation.z = target_q[2]
+        target_pose.pose.orientation.w = target_q[3]
         # Add the target object to the scene
         scene.add_box(target_id, target_pose, target_size)
 
@@ -214,17 +221,35 @@ class MoveItDemo:
         place_pose.pose.position.x = 0.33 + 0.1
         place_pose.pose.position.y = -0.18
         place_pose.pose.position.z = table_ground + table_size[2] + target_size[1] / 2.0
-        rolll = math.pi/2
-        pitch = 0
-        yaw = 0
-        tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
-        place_pose.pose.orientation.x = tar_q[0]
-        place_pose.pose.orientation.y = tar_q[1]
-        place_pose.pose.orientation.z = tar_q[2]
-        place_pose.pose.orientation.w = tar_q[3]
+        place_roll = math.pi/2
+        place_pitch = 0
+        place_yaw = 0
+        pla_q = tf.transformations.quaternion_from_euler(place_roll, place_pitch, place_yaw)
+        place_pose.pose.orientation.x = pla_q[0]
+        place_pose.pose.orientation.y = pla_q[1]
+        place_pose.pose.orientation.z = pla_q[2]
+        place_pose.pose.orientation.w = pla_q[3]
 
-#--------------- Initialize the grasp pose to the target pose ----------------------------------------
-        # grasp_pose = target_pose
+#--------------- target_pose, place_poseから、つかめる grasp を厳選する --------------------------------------------
+        #物体のgoal - startの各角度　で　変換角度をもとめる
+        trans_roll = place_roll - target_roll
+        trans_pitch = place_pitch - target_pitch
+        trans_yaw = place_yaw - target_yaw
+
+        #求めた変換角度をハンドに適用して　つかむ角度から置くときの角度を求める
+        place_grasp = PoseStamped()
+        place_deg_list = []
+        # for num in range(1,7):
+        #     place_grasp , target_grasp_roll, target_grasp_pitch, target_grasp_yaw = eval('fuf.grasp_pose_'+str(num))eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        #     place_grasp_roll = target_grasp_roll + trans_roll
+        #     place_grasp_pitch = target_grasp_pitch + trans_pitch
+        #     place_grasp_yaw = target_grasp_yaw + trans_yaw
+        #     place_tp = (num, place_grasp_roll, place_grasp_pitch, place_grasp_yaw)
+        #     place_deg_list.append(place_tp)
+
+
+#--------------- 距離、角度から最短のgraspを決める ----------------------------------------
+        # アーム初期位置でのハンドの位置
         init_pose = PoseStamped()
         init_pose = right_arm.get_current_pose() #.pose
         init_pose_quat = (init_pose.pose.orientation.x,
@@ -265,7 +290,7 @@ class MoveItDemo:
             e_deg = fuf.calc_e_deg(deg)
 
             E = 0.3*e_dist + 0.7*e_deg
-            tp =(num, E)
+            tp =(num, E) #タプルをつくってリストにぶっこむ
             E_list.append(tp)
             print "E = %f" % E
             print E_list
@@ -277,6 +302,7 @@ class MoveItDemo:
 
 
         grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_7(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
         # grasp_pose.header.frame_id = REFERENCE_FRAME
         # grasp_pose.pose.position.x = target_pose.pose.position.x

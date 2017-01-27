@@ -105,7 +105,7 @@ def grasp_pose_5(x, y, z):
     grasp_pose.pose.position.z = z
     roll = 0
     pitch = 0
-    yaw =  -math.pi/2
+    yaw =  3*math.pi/2  #-math.pi/2   #piまでで表現したほうがいいかも
     tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]
@@ -135,6 +135,25 @@ def grasp_pose_6(x, y, z):
 
     return grasp_pose, roll, pitch, yaw
 
+def grasp_pose_7(x, y, z):
+    grasp_pose = PoseStamped()
+    grasp_pose.header.frame_id = REFERENCE_FRAME
+    grasp_pose.pose.position.x = x + 0.02
+    grasp_pose.pose.position.y = y
+    grasp_pose.pose.position.z = z
+    roll = 0
+    pitch = 0
+    yaw =  3*math.pi/2
+    tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
+    grasp_pose.pose.orientation.x = tar_q[0]
+    grasp_pose.pose.orientation.y = tar_q[1]
+    grasp_pose.pose.orientation.z = tar_q[2]
+    grasp_pose.pose.orientation.w = tar_q[3]
+    print "------- grasp_pose_7 -----------"
+    print "(roll, pitch, yaw) = (%f, %f, %f)" % (roll, pitch, yaw)
+
+    return grasp_pose, roll, pitch, yaw
+
 def calc_dist(x1, y1, z1, x2, y2, z2):
     a = np.array([x1,y1,z1])
     b = np.array([x2,y2,z2])
@@ -153,3 +172,8 @@ def calc_e_dist(dist, dist_min, dist_max):
 def calc_e_deg(deg):
     e_deg = 1 - (deg / math.pi)
     return e_deg
+
+def ng_place_grasp_thin_out():
+    ng_rpy_tp_1 = (math.pi, math.pi, 0)
+    ng_rpy_tp_3 = (math.pi, 0, math.pi)
+    ng_rpy_tp_0 = (math.pi, math.pi, 0)
