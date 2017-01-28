@@ -141,9 +141,9 @@ def grasp_pose_7(x, y, z):
     grasp_pose.pose.position.x = x + 0.02
     grasp_pose.pose.position.y = y
     grasp_pose.pose.position.z = z
-    roll = 0
+    roll = math.pi/2
     pitch = 0
-    yaw =  3*math.pi/2
+    yaw =  0
     tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
     grasp_pose.pose.orientation.x = tar_q[0]
     grasp_pose.pose.orientation.y = tar_q[1]

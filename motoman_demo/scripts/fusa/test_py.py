@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # coding: UTF-8
 
+import cv2
 import math
 import numpy as np
 from numpy import sin, cos
@@ -97,13 +98,65 @@ print pose
 
 def R_mat (r,p,y):
     R = np.matrix( [
-        [cos(p)*cos(y), sin(r)*sin(p)*sin(y)-cos(r)*cos(y), sin(r)*sin(y)+cos(r)*sin(p)*cos(y) ],
-        [cos(p)*cos(y), sin(r)*sin(p)*sin(y)+cos(r)*cos(y), -sin(r)*sin(y)+cos(r)*sin(p)*sin(y)],
+        [cos(p)*cos(y), sin(r)*sin(p)*sin(y)-cos(r)*sin(y), sin(r)*sin(y)+cos(r)*sin(p)*cos(y) ],
+        [cos(p)*cos(y), sin(r)*sin(p)*sin(y)+cos(r)*cos(y), -sin(r)*cos(y)+cos(r)*sin(p)*sin(y)],
         [-sin(p), sin(r)*cos(p), cos(r)*cos(p)]])
     return R
 
 def R_return(R):
     print R
+
+# Calculates Rotation Matrix given euler angles.
+def eulerAnglesToRotationMatrix(theta) :
+
+    R_x = np.array([[1,         0,                  0                   ],
+                    [0,         math.cos(theta[0]), -math.sin(theta[0]) ],
+                    [0,         math.sin(theta[0]), math.cos(theta[0])  ]
+                    ])
+
+
+
+    R_y = np.array([[math.cos(theta[1]),    0,      math.sin(theta[1])  ],
+                    [0,                     1,      0                   ],
+                    [-math.sin(theta[1]),   0,      math.cos(theta[1])  ]
+                    ])
+
+    R_z = np.array([[math.cos(theta[2]),    -math.sin(theta[2]),    0],
+                    [math.sin(theta[2]),    math.cos(theta[2]),     0],
+                    [0,                     0,                      1]
+                    ])
+
+
+    R = np.dot(R_z, np.dot( R_y, R_x ))
+
+    return R
+
+# Checks if a matrix is a valid rotation matrix.
+def isRotationMatrix(R) :
+    Rt = np.transpose(R)
+    shouldBeIdentity = np.dot(Rt, R)
+    I = np.identity(3, dtype = R.dtype)
+    n = np.linalg.norm(I - shouldBeIdentity)
+    return n < 1e-6
+
+def rotationMatrixToEulerAngles(R) :
+
+    #assert(isRotationMatrix(R))
+
+    sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
+
+    singular = sy < 1e-6
+
+    if  not singular :
+        x = math.atan2(R[2,1] , R[2,2])
+        y = math.atan2(-R[2,0], sy)
+        z = math.atan2(R[1,0], R[0,0])
+    else :
+        x = math.atan2(-R[1,2], R[1,1])
+        y = math.atan2(-R[2,0], sy)
+        z = 0
+
+    return np.array([x, y, z])
 
 # Rt = R_mat(math.pi/2,0,0)
 # Rh = R_mat(0,0,-math.pi/2)
@@ -114,7 +167,7 @@ def R_return(R):
 # print math.degrees(pitch)
 
 
-Pit = R_mat(0,math.pi/2,0)
+Pit = R_mat(0,math.pi/2,math.pi/2)
 pitch = math.atan2(-Pit[2,0],math.sqrt(Pit[0,0]**2+Pit[1,0]**2))
 print pitch
 pitch = math.asin(-Pit[2,0])
@@ -124,8 +177,29 @@ print "--------------------"
 R_return(Pit)
 print pitch
 print roll
+print "=========================="
+theta = [0,math.pi/2,math.pi/2]
+M = eulerAnglesToRotationMatrix(theta)
+l = rotationMatrixToEulerAngles(M)
+print M
+print "^^^^^^^^^^^^^^^^^^^^^^^^^^"
+print "rzyx"
+Rt= tf.transformations.euler_matrix(math.pi/2,0,0,'rzyx')
+Rtlist = tf.transformations.euler_from_matrix(Rt,'rzyx')
+print Rt
+print np.rad2deg(Rtlist)
+print "~~~~~~~~~~~~~~~~~~~~~~~~"
+print "szyx"
+Rh = tf.transformations.euler_matrix(0, 0, math.pi,'rzyx')
+Rhlist = tf.transformations.euler_from_matrix(Rh,'rzyx')
+print Rh
+print np.rad2deg(Rhlist)
 
+H2 = Rh.dot(Rt)
+H2list = tf.transformations.euler_from_matrix(H2,'rzyx')
+print "rad " + str(H2list)
+print "degree " + str(np.rad2deg(H2list))
+print np.deg2rad(np.round(np.rad2deg(H2list), 5))
 
-
-sp = sin(math.pi/6)
-print math.asin(-sp)
+form = [0.000000001, 1.2222232, 3.13232]
+print np.round(form,2)

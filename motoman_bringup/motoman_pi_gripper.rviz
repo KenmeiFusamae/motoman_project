@@ -195,7 +195,7 @@ Visualization Manager:
         Goal State Color: 250; 128; 0
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
-        Planning Group: ""
+        Planning Group: arm
         Query Goal State: false
         Query Start State: false
         Show Workspace: false
@@ -332,7 +332,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 1.20289
+      Distance: 2.62091
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -344,10 +344,10 @@ Visualization Manager:
         Z: 0
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.385398
+      Pitch: 0.165398
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 6.19858
+      Yaw: 1.54539
     Saved: ~
 Window Geometry:
   Displays:
@@ -367,5 +367,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 960
-  X: 1987
-  Y: 976
+  X: 1977
+  Y: 966

@@ -146,12 +146,12 @@ class MoveItDemo:
         box2_size = [0.05, 0.05, 0.15]
 
         # Set the target size [l, w, h]
-        target_size = [0.04, 0.03, 0.12]
+        target_size = [0.04, 0.03, 0.12] #0.04, 0.03, 0.12  #0.02, 0.02, 0.02
 
         # Add a table top and two boxes to the scene
         table_pose = PoseStamped()
         table_pose.header.frame_id = REFERENCE_FRAME
-        table_pose.pose.position.x = 0.4 + 0.1
+        table_pose.pose.position.x = 0.4 +0.1
         table_pose.pose.position.y = 0.0
         table_pose.pose.position.z = table_ground + table_size[2] / 2.0
         table_pose.pose.orientation.w = 1.0
@@ -191,7 +191,7 @@ class MoveItDemo:
         target_pose.header.frame_id = REFERENCE_FRAME
         target_pose.pose.position.x = 0.47
         target_pose.pose.position.y = 0.0 #0.0
-        target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
+        target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0 
         target_roll = 0
         target_pitch = 0
         target_yaw = 0
@@ -323,7 +323,7 @@ class MoveItDemo:
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
         #grasp_pose.pose.position.y -= target_size[1] / 2.0
         print "---------- 	execute_grasp_pose ---------------"
-        print grasp_pose
+
 
 
 #---------------------------------------------------------------------------------
@@ -455,9 +455,10 @@ class MoveItDemo:
 
         # Pitch angles to try 受けたっとposeに足す形にすればいいんちゃうか  ここオイラー
         pitch_vals = [pitch, pitch+0.1, pitch-0.1, pitch+0.2, pitch-0.2, pitch+0.3, pitch-0.3]
-
         # Yaw angles to try
         yaw_vals = [yaw, yaw+0.1, yaw-0.1, yaw+0.2, yaw-0.2, yaw+0.3, yaw-0.3]
+        # roll angles to try
+        roll_vals = [roll, roll+0.1, roll-0.1, roll+0.2, roll-0.2, roll+0.3, roll-0.3]
 
         # A list to hold the grasps
         grasps = []
@@ -465,29 +466,30 @@ class MoveItDemo:
         # Generate a grasp for each pitch and yaw angle
         for y in yaw_vals:
             for p in pitch_vals:
-                # Create a quaternion from the Euler angles (roll, pitch, yaw)
-                q = quaternion_from_euler(roll, p, y)
+                for r in roll_vals:
+                    # Create a quaternion from the Euler angles (roll, pitch, yaw)
+                    q = quaternion_from_euler(r, p, y)
 
-                # Set the grasp pose orientation accordingly
-                g.grasp_pose.pose.orientation.x = q[0]
-                g.grasp_pose.pose.orientation.y = q[1]
-                g.grasp_pose.pose.orientation.z = q[2]
-                g.grasp_pose.pose.orientation.w = q[3]
+                    # Set the grasp pose orientation accordingly
+                    g.grasp_pose.pose.orientation.x = q[0]
+                    g.grasp_pose.pose.orientation.y = q[1]
+                    g.grasp_pose.pose.orientation.z = q[2]
+                    g.grasp_pose.pose.orientation.w = q[3]
 
-                # Set and id for this grasp (simply needs to be unique)
-                g.id = str(len(grasps))
+                    # Set and id for this grasp (simply needs to be unique)
+                    g.id = str(len(grasps))
 
-                # Set the allowed touch objects to the input list
-                g.allowed_touch_objects = allowed_touch_objects
+                    # Set the allowed touch objects to the input list
+                    g.allowed_touch_objects = allowed_touch_objects
 
-                # Don't restrict contact force
-                g.max_contact_force = 0
+                    # Don't restrict contact force
+                    g.max_contact_force = 0
 
-                # Degrade grasp quality for increasing pitch angles
-                g.grasp_quality = 1.0 - abs(p)
+                    # Degrade grasp quality for increasing pitch angles
+                    g.grasp_quality = 1.0 - abs(p)
 
-                # Append the grasp to the list
-                grasps.append(deepcopy(g))
+                    # Append the grasp to the list
+                    grasps.append(deepcopy(g))
 
         # Return the list
         return grasps
