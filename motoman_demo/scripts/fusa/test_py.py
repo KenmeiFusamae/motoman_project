@@ -196,10 +196,15 @@ print Rh
 print np.rad2deg(Rhlist)
 
 H2 = Rh.dot(Rt)
-H2list = tf.transformations.euler_from_matrix(H2,'rzyx')
+H2list = list(tf.transformations.euler_from_matrix(H2,'rzyx'))
 print "rad " + str(H2list)
-print "degree " + str(np.rad2deg(H2list))
-print np.deg2rad(np.round(np.rad2deg(H2list), 5))
+# print "degree " + str(np.rad2deg(H2list))
+# print np.deg2rad(np.round(np.rad2deg(H2list), 5))
+rrr =  np.round(H2list,5)
+print "round "  + str(rrr)
+print "rad " + str(np.deg2rad(np.rad2deg(rrr)))
 
-form = [0.000000001, 1.2222232, 3.13232]
-print np.round(form,2)
+for i in  range(len(H2list)):
+    if  -0.01 < H2list[i] < 0.01:
+        H2list[i] = 0
+print "clearn list " + str(H2list)
