@@ -208,3 +208,29 @@ for i in  range(len(H2list)):
     if  -0.01 < H2list[i] < 0.01:
         H2list[i] = 0
 print "clearn list " + str(H2list)
+
+
+li = [0,2,0,0,5,0]
+li_uniq = []
+for x in li:
+    if x not in li_uniq:
+        li_uniq.append(x)
+print li_uniq
+li_uniq.remove(0)
+print li_uniq
+
+
+print "====== list test ========"
+li_all = [3,4,1,2,6,5]
+t_list = [2,5]
+for i in li_all:
+    if i not in t_list:
+        li_all.remove(i)
+print li_all
+print t_list
+print "======= list test youso ver ======="
+li_all2 = [3,4,1,2,6,5]
+for i in range(len(li_all2)):
+    if  li_all2[i] not in t_list:
+        li_all2.pop(i)
+print li_all2

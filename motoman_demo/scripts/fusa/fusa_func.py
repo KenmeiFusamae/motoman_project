@@ -173,7 +173,8 @@ def calc_e_deg(deg):
     e_deg = 1 - (deg / math.pi)
     return e_deg
 
-def ng_place_grasp_thin_out():
-    ng_rpy_tp_1 = (math.pi, math.pi, 0)
-    ng_rpy_tp_3 = (math.pi, 0, math.pi)
-    ng_rpy_tp_0 = (math.pi, math.pi, 0)
+def extraction_pose(num, rpy_list):
+    if 89 < rpy_list[0] < 91 or -91 < rpy_list[0] < -89 or -91 < rpy_list[1] < -89:
+        return 0
+    else:
+        return num

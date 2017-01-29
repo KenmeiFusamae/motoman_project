@@ -2,6 +2,7 @@
 # coding: UTF-8
 
 import math
+import numpy as np
 import rospy, sys
 import moveit_commander
 import tf2_ros
@@ -241,7 +242,7 @@ class MoveItDemo:
         Rt = tf.transformations.euler_matrix(trans_roll, trans_pitch, trans_yaw,'rzyx')
 
         grasp_pose = PoseStamped()
-        place_pose_rpy = []
+        ok_pose_idlist = []
         for num in range(1,7):
             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
             Rh = tf.transformations.euler_matrix(grasp_roll, grasp_pitch, grasp_yaw,'rzyx')
@@ -253,6 +254,18 @@ class MoveItDemo:
                 if -0.01 < Rg_rpy[i] < 0.01:
                     Rg_rpy[i] = 0
             print "clearn rpy  " + str(Rg_rpy)
+            Rg_rpy_np = np.rad2deg(Rg_rpy)
+            Rg_rpy_list = Rg_rpy_np.tolist() #rpyのdegのリスト
+            #fuf.extraction_pose(num, Rg_rpy_list)
+            ok_pose_idlist.append(fuf.extraction_pose(num,Rg_rpy_list))
+            print ok_pose_idlist
+
+        ok_pose_re_0 = []
+        for i in ok_pose_idlist:
+            if i not in ok_pose_re_0:
+                ok_pose_re_0.append(i)
+        ok_pose_re_0.remove(0)
+        print ok_pose_re_0
 
 
 
