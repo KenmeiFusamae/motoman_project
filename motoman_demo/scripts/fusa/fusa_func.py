@@ -178,3 +178,10 @@ def extraction_pose(num, rpy_list):
         return 0
     else:
         return num
+
+def choose_pose(can_list, e_list):
+    get_list  = []
+    for  i in range(len(e_list)):
+        if e_list[i][0] in can_list:
+            get_list.append(e_list[i][0])
+    return get_list

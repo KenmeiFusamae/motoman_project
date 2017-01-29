@@ -323,9 +323,14 @@ class MoveItDemo:
         print E_list
         print E_list[0][0]
 
+        choosed_pose_list = []   #つかめる姿勢かつ評価がいい順にならぶ　入るのはposeのid
+        choosed_pose_list = fuf.choose_pose(ok_pose_re_0,E_list)
+        print "choosed list "
+        print choosed_pose_list
 
-        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_7(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(choosed_pose_list[0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_7(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
         # grasp_pose.header.frame_id = REFERENCE_FRAME
         # grasp_pose.pose.position.x = target_pose.pose.position.x

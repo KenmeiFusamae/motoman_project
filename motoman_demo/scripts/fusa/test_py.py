@@ -230,7 +230,33 @@ print li_all
 print t_list
 print "======= list test youso ver ======="
 li_all2 = [3,4,1,2,6,5]
+li_ture = []
 for i in range(len(li_all2)):
-    if  li_all2[i] not in t_list:
-        li_all2.pop(i)
-print li_all2
+    if  li_all2[i]  in t_list:
+        li_ture.append(li_all2[i])
+print li_ture
+
+print "======== list tuple が絡んだとき ========"
+tp1 = (1,434)
+tp2 = (2,23424)
+tp3 = (3,554)
+tp4 = (4, 4334)
+tp5 = (5, 212)
+tp6 = (6, 870)
+E_list = []
+E_list.append(tp3)
+E_list.append(tp4)
+E_list.append(tp1)
+E_list.append(tp2)
+E_list.append(tp6)
+E_list.append(tp5)
+print E_list
+print E_list[1][0]
+print E_list[1][1]
+print len(E_list)
+get_list = []
+for i in range(len(E_list)):
+    if E_list[i][0] in t_list:
+        get_list.append(E_list[i][0])
+print "get list "
+print get_list
