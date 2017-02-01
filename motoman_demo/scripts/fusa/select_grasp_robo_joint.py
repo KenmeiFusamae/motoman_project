@@ -194,7 +194,7 @@ class MoveItDemo:
         target_pose.pose.position.y = 0.0 #0.0
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         target_roll = 0
-        target_pitch = math.pi/2
+        target_pitch = 0
         target_yaw = 0
         target_q = tf.transformations.quaternion_from_euler(target_roll, target_pitch, target_yaw)
         target_pose.pose.orientation.x = target_q[0]
@@ -377,22 +377,7 @@ class MoveItDemo:
         # rospy.sleep(3)
 
 
-        # grasp_pose.header.frame_id = REFERENCE_FRAME
-        # grasp_pose.pose.position.x = target_pose.pose.position.x
-        # grasp_pose.pose.position.y = target_pose.pose.position.y
-        # grasp_pose.pose.position.z = target_pose.pose.position.z
-        # rolll = 0
-        # pitch = math.pi/2
-        # yaw =  math.pi/2
-        # tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
-        # grasp_pose.pose.orientation.x = tar_q[0]
-        # grasp_pose.pose.orientation.y = tar_q[1]
-        # grasp_pose.pose.orientation.z = tar_q[2]
-        # grasp_pose.pose.orientation.w = tar_q[3]
-
-        #grasp_pose = fuf.grasp_pose_5(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
-
-
+        
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
         #grasp_pose.pose.position.y -= target_size[1] / 2.0
         print "---------- 	execute_grasp_pose ---------------"

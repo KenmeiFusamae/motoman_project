@@ -260,3 +260,5 @@ for i in range(len(E_list)):
         get_list.append(E_list[i][0])
 print "get list "
 print get_list
+
+print "======== ik test ========="

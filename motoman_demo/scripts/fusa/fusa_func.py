@@ -158,20 +158,28 @@ def calc_dist(x1, y1, z1, x2, y2, z2):
     a = np.array([x1,y1,z1])
     b = np.array([x2,y2,z2])
     dist = np.linalg.norm(b-a)
-    print "dist = %f " % dist
-    return dist
+    #print "dist = %f " % dist
 
-def calc_deg(init_roll, init_pitch, init_yaw, grasp_roll, grasp_pitch, grasp_yaw):
-    deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
-    return deg
+    return dist
 
 def calc_e_dist(dist, dist_min, dist_max):
     e_dist = 1 -(dist - dist_min)/(dist_max - dist_min)
     return e_dist
 
+# def calc_deg(init_roll, init_pitch, init_yaw, grasp_roll, grasp_pitch, grasp_yaw):
+#     deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
+#     return deg
+
 def calc_e_deg(deg):
     e_deg = 1 - (deg / math.pi)
     return e_deg
+
+def calc_e_deg(init_roll, init_pitch, init_yaw, grasp_roll, grasp_pitch, grasp_yaw):
+    deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
+    e_deg = 1 - (deg / (3*math.pi))
+    return e_deg
+
+
 
 def extraction_pose(num, rpy_list):
     if 89 < rpy_list[0] < 91 or -91 < rpy_list[0] < -89 or -91 < rpy_list[1] < -89:
