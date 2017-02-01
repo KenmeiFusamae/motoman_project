@@ -348,14 +348,14 @@ class MoveItDemo:
         #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
         grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_4(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
-        right_arm.set_pose_target(target_pose, end_effector_link)
-        right_arm.go()
-        print "===== set pose target ======="
-        print " get cuurent joint "
-        print right_arm.get_current_joint_values()
-        print " get joint value target "
-        print right_arm.get_joint_value_target()
-        rospy.sleep(3)
+        # right_arm.set_pose_target(target_pose, end_effector_link)
+        # right_arm.go()
+        # print "===== set pose target ======="
+        # print " get cuurent joint "
+        # print right_arm.get_current_joint_values()
+        # print " get joint value target "
+        # print right_arm.get_joint_value_target()
+        # rospy.sleep(3)
 
 
         right_arm.set_joint_value_target(target_pose, end_effector_link)
@@ -377,7 +377,7 @@ class MoveItDemo:
         # rospy.sleep(3)
 
 
-        
+
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
         #grasp_pose.pose.position.y -= target_size[1] / 2.0
         print "---------- 	execute_grasp_pose ---------------"
