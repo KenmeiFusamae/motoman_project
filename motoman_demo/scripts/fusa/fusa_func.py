@@ -170,14 +170,25 @@ def calc_e_dist(dist, dist_min, dist_max):
 #     deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
 #     return deg
 
-def calc_e_deg(deg):
-    e_deg = 1 - (deg / math.pi)
-    return e_deg
+# def calc_e_deg(deg):
+#     e_deg = 1 - (deg / math.pi)
+#     return e_deg
 
 def calc_e_deg(init_roll, init_pitch, init_yaw, grasp_roll, grasp_pitch, grasp_yaw):
     deg = abs(init_roll - grasp_roll)+abs(init_pitch - grasp_pitch)+abs(init_yaw - grasp_yaw)
     e_deg = 1 - (deg / (3*math.pi))
     return e_deg
+
+def calc_e_deg7(start_list, end_list):
+    deg = 0
+    for i in range(len(start_list)):
+        d = abs(end_list[i] - start_list[i])
+        
+        deg += d
+    e_deg = 1 - (deg / (7*180))
+    return e_deg
+
+
 
 
 
@@ -193,3 +204,16 @@ def choose_pose(can_list, e_list):
         if e_list[i][0] in can_list:
             get_list.append(e_list[i][0])
     return get_list
+
+def find_IK(Pose_stamp, end_effector_link,right_arm):
+    p = False
+    while not p:  #ikが見つかるまで、繰り返す
+        p = right_arm.set_joint_value_target(Pose_stamp, end_effector_link)
+    # print "joint value  from ik"
+    # print p
+    # print right_arm.get_joint_value_target()
+
+    deg_np_list = np.rad2deg(right_arm.get_joint_value_target())
+    deg_list = deg_np_list.tolist()
+    #print "ik degree " +str(deg_list)
+    return deg_list

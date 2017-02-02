@@ -190,8 +190,8 @@ class MoveItDemo:
         # Set the target pose in between the boxes and on the table
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.pose.position.x = 0.47
-        target_pose.pose.position.y = 0.0 #0.0
+        target_pose.pose.position.x = 0.47 -0.05
+        target_pose.pose.position.y = 0.0  + 0.1
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         target_roll = 0
         target_pitch = 0
@@ -222,8 +222,8 @@ class MoveItDemo:
         place_pose.pose.position.x = 0.33 + 0.1
         place_pose.pose.position.y = -0.18
         place_pose.pose.position.z = table_ground + table_size[2] + target_size[1] / 2.0 +0.1
-        place_roll =  0 #math.pi#math.pi/2
-        place_pitch =  math.pi/2
+        place_roll =  math.pi #math.pi#math.pi/2
+        place_pitch =  0
         place_yaw = 0
         pla_q = tf.transformations.quaternion_from_euler(place_roll, place_pitch, place_yaw)
         place_pose.pose.orientation.x = pla_q[0]
@@ -264,7 +264,7 @@ class MoveItDemo:
             if i not in ok_pose_re_0:
                 ok_pose_re_0.append(i)
         #ok_pose_re_0.remove(0)   #0が残ってるとき
-        print ok_pose_re_0
+        print "OK pose list " + str(ok_pose_re_0)  #place での物体の姿勢を達成できるハンド姿勢のID
 
 
 
@@ -285,7 +285,7 @@ class MoveItDemo:
         grasp_pose = PoseStamped()
         dist_list_init_pick = [] #dist_min  dist_maxのため
         dist_list_pick_place = []
-        for num in range(1,7):
+        for num in range(1,6):  #grasp_pose_6はIKが求まらんこと多いから、どかしてみる　=１〜６　　ホントは(1,7)
             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
             dist_init_pick = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
                                            grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
@@ -295,36 +295,58 @@ class MoveItDemo:
                                                 place_pose.pose.position.x, place_pose.pose.position.y, place_pose.pose.position.z)
             dist_list_pick_place.append(dist_pick_place)
 
+
+
         print dist_list_init_pick
         dist_list_init_pick.sort()
         print dist_list_init_pick
-        print "dist_list_init_pick[0] = %f" % dist_list_init_pick[0]
-        print "dist_list_init_pick[6] = %f" % dist_list_init_pick[5]
+        #print "dist_list_init_pick[0] = %f" % dist_list_init_pick[0]
+        #print "dist_list_init_pick[6] = %f" % dist_list_init_pick[4]
         dist_min_init_pick = dist_list_init_pick[0]
-        dist_max_init_pick = dist_list_init_pick[5]
+        dist_max_init_pick = dist_list_init_pick[-1]
 
         dist_list_pick_place.sort()
         dist_min_pick_place = dist_list_pick_place[0]
-        dist_max_pick_place = dist_list_pick_place[5]
+        dist_max_pick_place = dist_list_pick_place[-1]
 
         #-------求めた距離max,minを使って、評価値を計算---------
         E_list = []
-        for num in range(1,7):
+        for num in range(1,6):
             #print "num = %d" % num
             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
             dist_init_pick = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
                                            grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
             e1_dist = fuf.calc_e_dist(dist_init_pick, dist_min_init_pick, dist_max_init_pick )
-            e1_deg = fuf.calc_e_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw) #rpyを全部足しこんだもの
+
+            init_deg_list = fuf.find_IK(init_pose, end_effector_link, right_arm)  #７軸の角度が入ってる (deg)
+            pick_deg_list = fuf.find_IK(grasp_pose, end_effector_link, right_arm)
+            e1_deg = fuf.calc_e_deg7(init_deg_list, pick_deg_list)
+
+            # p = False
+            # while not p:  #ikが見つかるまで、繰り返す
+            #     p = right_arm.set_joint_value_target(grasp_pose, end_effector_link)
+            # print "joint value  from ik"
+            # print p
+            # print right_arm.get_joint_value_target()
+
+
+            #e1_deg = fuf.calc_e_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw) #rpyを全部足しこんだもの
             E1 = 0.3*e1_dist + 0.7*e1_deg
             print "e1_dist =  %f" %e1_dist
             print "e1_deg  =  %f" %e1_deg
+            print "E1  = %f" %E1
 
             dist_pick_place = fuf.calc_dist(grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z,
                                             place_pose.pose.position.x, place_pose.pose.position.y, place_pose.pose.position.z)
             e2_dist = fuf.calc_e_dist(dist_pick_place, dist_min_pick_place, dist_max_pick_place)
-            e2_deg = fuf.calc_e_deg(grasp_roll, grasp_pitch, grasp_yaw, place_roll, place_pitch, place_yaw)
+
+            place_deg_list = fuf.find_IK(place_pose, end_effector_link, right_arm)
+            e2_deg = fuf.calc_e_deg7(pick_deg_list, place_deg_list)
+
             E2 = 0.3*e2_dist + 0.7*e2_deg
+            print "e2_dist =  %f" %e2_dist
+            print "e2_deg  =  %f" %e2_deg
+            print "E2  = %f" %E2
 
             E = E1 + E2
 
@@ -346,7 +368,7 @@ class MoveItDemo:
         grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(choosed_pose_list[0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
         #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_4(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_4(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
         # right_arm.set_pose_target(target_pose, end_effector_link)
         # right_arm.go()
@@ -358,13 +380,13 @@ class MoveItDemo:
         # rospy.sleep(3)
 
 
-        right_arm.set_joint_value_target(target_pose, end_effector_link)
-        right_arm.go()
-        print "===== set joint value target  ======="
-        print " get cuurent joint "
-        print right_arm.get_current_joint_values()
-        print " get joint value target "
-        print right_arm.get_joint_value_target()
+        # right_arm.set_joint_value_target(target_pose, end_effector_link)
+        # right_arm.go()
+        # print "===== set joint value target  ======="
+        # print " get cuurent joint "
+        # print right_arm.get_current_joint_values()
+        # print " get joint value target "
+        # print right_arm.get_joint_value_target()
 
         #joint_positions = [-0.2109587991228755, 0.6748677438425055, -0.37672985083633426, 0.6108336739791288, -0.23917114662678646, -1.6158254911883256, 0.5652131601423924]
         #joint_positions = [-0.13796497631186252, 0.4428416445747007, -0.3637849503885936, 0.2747198389029563, -0.1546085992064018, -1.4299920016570258, 0.4911570240154483]
