@@ -458,7 +458,7 @@ class MoveItDemo:
         # Yaw angles to try
         yaw_vals = [yaw, yaw+0.1, yaw-0.1, yaw+0.2, yaw-0.2, yaw+0.3, yaw-0.3]
         # roll angles to try
-        roll_vals = [roll, roll+0.1, roll-0.1, roll+0.2, roll-0.2, roll+0.3, roll-0.3]
+        # roll_vals = [roll, roll+0.1, roll-0.1, roll+0.2, roll-0.2, roll+0.3, roll-0.3]
 
         # A list to hold the grasps
         grasps = []
@@ -466,7 +466,7 @@ class MoveItDemo:
         # Generate a grasp for each pitch and yaw angle
         for y in yaw_vals:
             for p in pitch_vals:
-                for r in roll_vals:
+                # for r in roll_vals:
                     # Create a quaternion from the Euler angles (roll, pitch, yaw)
                     q = quaternion_from_euler(r, p, y)
 

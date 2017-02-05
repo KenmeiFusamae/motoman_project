@@ -2,6 +2,7 @@
 # coding: UTF-8
 
 import math
+import numpy as np
 import rospy, sys
 import moveit_commander
 import tf2_ros
@@ -189,8 +190,8 @@ class MoveItDemo:
         # Set the target pose in between the boxes and on the table
         target_pose = PoseStamped()
         target_pose.header.frame_id = REFERENCE_FRAME
-        target_pose.pose.position.x = 0.47
-        target_pose.pose.position.y = 0.0 #0.0
+        target_pose.pose.position.x = 0.47 -0.05
+        target_pose.pose.position.y = 0.0  + 0.1
         target_pose.pose.position.z = table_ground + table_size[2] + target_size[2] / 2.0
         target_roll = 0
         target_pitch = 0
@@ -204,7 +205,7 @@ class MoveItDemo:
         scene.add_box(target_id, target_pose, target_size)
 
         # Make the table red and the boxes orange
-        self.setColor(table_id, 0.8, 0, 0, 1.0)
+        self.setColor(table_id, 0.4, 0.4, 0.4, 1.0)
         self.setColor(box1_id, 0.8, 0.4, 0, 1.0)
         self.setColor(box2_id, 0.8, 0.4, 0, 1.0)
         # Make the target yellow
@@ -220,9 +221,9 @@ class MoveItDemo:
         place_pose.header.frame_id = REFERENCE_FRAME
         place_pose.pose.position.x = 0.33 + 0.1
         place_pose.pose.position.y = -0.18
-        place_pose.pose.position.z = table_ground + table_size[2] + target_size[1] / 2.0
-        place_roll = math.pi/2
-        place_pitch = 0
+        place_pose.pose.position.z = table_ground + table_size[2] + target_size[1] / 2.0 +0.1
+        place_roll =  math.pi/2 #math.pi#math.pi/2
+        place_pitch =  0
         place_yaw = 0
         pla_q = tf.transformations.quaternion_from_euler(place_roll, place_pitch, place_yaw)
         place_pose.pose.orientation.x = pla_q[0]
@@ -230,94 +231,175 @@ class MoveItDemo:
         place_pose.pose.orientation.z = pla_q[2]
         place_pose.pose.orientation.w = pla_q[3]
 
+
 #--------------- target_pose, place_poseから、つかめる grasp を厳選する --------------------------------------------
-#         #物体のgoal - startの各角度　で　変換角度をもとめる
-#         trans_roll = place_roll - target_roll
-#         trans_pitch = place_pitch - target_pitch
-#         trans_yaw = place_yaw - target_yaw
-#
-#         #求めた変換角度をハンドに適用して　つかむ角度から置くときの角度を求める
-#         place_grasp = PoseStamped()
-#         place_deg_list = []
-#         # for num in range(1,7):
-#         #     place_grasp , target_grasp_roll, target_grasp_pitch, target_grasp_yaw = eval('fuf.grasp_pose_'+str(num))eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-#         #     place_grasp_roll = target_grasp_roll + trans_roll
-#         #     place_grasp_pitch = target_grasp_pitch + trans_pitch
-#         #     place_grasp_yaw = target_grasp_yaw + trans_yaw
-#         #     place_tp = (num, place_grasp_roll, place_grasp_pitch, place_grasp_yaw)
-#         #     place_deg_list.append(place_tp)
-#
-#
-# #--------------- 距離、角度から最短のgraspを決める ----------------------------------------
-#         # アーム初期位置でのハンドの位置
-#         init_pose = PoseStamped()
-#         init_pose = right_arm.get_current_pose() #.pose
-#         init_pose_quat = (init_pose.pose.orientation.x,
-#                           init_pose.pose.orientation.y,
-#                           init_pose.pose.orientation.z,
-#                           init_pose.pose.orientation.w,)
-#         (init_roll,init_pitch,init_yaw) = tf.transformations.euler_from_quaternion(init_pose_quat)
-#         print "---------- init_pose -----------"
-#         print init_pose
-#
-#         grasp_pose = PoseStamped()
-#         dist_list = [] #dist_min  dist_maxのため
-#         for num in range(1,7):
-#             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-#             dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
-#                                  grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
-#             dist_list.append(dist)
-#
-#         print dist_list
-#         dist_list.sort()
-#         print dist_list
-#         print "dist_list[0] = %f" % dist_list[0]
-#         print "dist_list[6] = %f" % dist_list[5]
-#         dist_min = dist_list[0]
-#         dist_max = dist_list[5]
-#
-#         E_list = []
-#         for num in range(1,7):
-#             #print "num = %d" % num
-#             grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-#             dist = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
-#                                  grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
-#             e_dist = fuf.calc_e_dist(dist, dist_min, dist_max )
-#
-#             print "grasp_roll, grasp_pitch, grasp_yaw = %f %f %f " %(grasp_roll, grasp_pitch, grasp_yaw)
-#             deg = fuf.calc_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw)
-#             print "deg = %f " % deg
-#             e_deg = fuf.calc_e_deg(deg)
-#
-#             E = 0.3*e_dist + 0.7*e_deg
-#             tp =(num, E) #タプルをつくってリストにぶっこむ
-#             E_list.append(tp)
-#             print "E = %f" % E
-#             print E_list
-#
-#         E_list = sorted(E_list, key = lambda x:x[1], reverse = True)
-#         print "----------  E_list -----------"
-#         print E_list
-#         print E_list[0][0]
+        #物体のgoal - startの各角度　で　変換角度をもとめる
+        trans_roll = place_roll - target_roll
+        trans_pitch = place_pitch - target_pitch
+        trans_yaw = place_yaw - target_yaw
+        print "Rt rpy  = %f, %f, %f" %(trans_roll, trans_pitch, trans_yaw)
+        #Rt = tf.transformations.euler_matrix(trans_roll, trans_pitch, trans_yaw,'rzyx')
+        # Rt = tf.transformations.euler_matrix(trans_roll, trans_pitch, trans_yaw,'rzyx')
+
+        grasp_pose = PoseStamped()
+        ok_pose_idlist = []
+        for num in range(1,7):
+            grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+            v, w = fuf.rotation_direc_vector(trans_roll, trans_pitch, trans_yaw, grasp_roll, grasp_pitch, grasp_yaw, 'sxyz')
+
+            print "---v--"
+            print v
+            print "---w--"
+            print w
+            buf = fuf.extraction_direc_vector(num,v,w)
+            if buf is not 0:
+                ok_pose_idlist.append(buf)
+
+            print "ok pose id  = " + str(ok_pose_idlist)
+        #     ok_pose_idlist.append(fuf.extraction_direc_vector(num, v, w))
+        #     print ok_pose_idlist
+        #
+        # ok_pose_re_0 = []
+        # for i in ok_pose_idlist:
+        #     if i not in ok_pose_re_0:
+        #         ok_pose_re_0.append(i)
+        # #ok_pose_re_0.remove(0)   #0が残ってるとき
+        # print "OK pose list " + str(ok_pose_re_0)  #place での物体の姿勢を達成できるハンド姿勢のID
 
 
-        # grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
-        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_7(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
 
-        # grasp_pose.header.frame_id = REFERENCE_FRAME
-        # grasp_pose.pose.position.x = target_pose.pose.position.x
-        # grasp_pose.pose.position.y = target_pose.pose.position.y
-        # grasp_pose.pose.position.z = target_pose.pose.position.z
-        # rolll = 0
-        # pitch = math.pi/2
-        # yaw =  math.pi/2
-        # tar_q = tf.transformations.quaternion_from_euler(rolll, pitch, yaw)
-        # grasp_pose.pose.orientation.x = tar_q[0]
-        # grasp_pose.pose.orientation.y = tar_q[1]
-        # grasp_pose.pose.orientation.z = tar_q[2]
-        # grasp_pose.pose.orientation.w = tar_q[3]
 
-        #grasp_pose = fuf.grasp_pose_5(target_pose.pose.position.x, target_pose.pose.position.y, target_pose.pose.position.z)
+
+#--------------- 距離、角度から最短のgraspを決める (初期姿勢からpick_poseまで)----------------------------------------
+        # アーム初期位置でのハンドの位置
+        init_pose = PoseStamped()
+        init_pose = right_arm.get_current_pose() #.pose
+        init_pose_quat = (init_pose.pose.orientation.x,
+                          init_pose.pose.orientation.y,
+                          init_pose.pose.orientation.z,
+                          init_pose.pose.orientation.w,)
+        (init_roll,init_pitch,init_yaw) = tf.transformations.euler_from_quaternion(init_pose_quat)
+
+
+        #-------距離のmaxとminを求めていくで---------
+        grasp_pose = PoseStamped()
+        dist_list_init_pick = [] #dist_min  dist_maxのため
+        dist_list_pick_place = []
+        for num in range(1,6):  #grasp_pose_6はIKが求まらんこと多いから、どかしてみる　=１〜６　　ホントは(1,7)
+            grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+            dist_init_pick = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
+                                           grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
+            dist_list_init_pick.append(dist_init_pick)
+
+            dist_pick_place = fuf.calc_dist(grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z,
+                                                place_pose.pose.position.x, place_pose.pose.position.y, place_pose.pose.position.z)
+            dist_list_pick_place.append(dist_pick_place)
+
+
+
+        print dist_list_init_pick
+        dist_list_init_pick.sort()
+        print dist_list_init_pick
+        #print "dist_list_init_pick[0] = %f" % dist_list_init_pick[0]
+        #print "dist_list_init_pick[6] = %f" % dist_list_init_pick[4]
+        dist_min_init_pick = dist_list_init_pick[0]
+        dist_max_init_pick = dist_list_init_pick[-1]
+
+        dist_list_pick_place.sort()
+        dist_min_pick_place = dist_list_pick_place[0]
+        dist_max_pick_place = dist_list_pick_place[-1]
+
+        #-------求めた距離max,minを使って、評価値を計算---------
+        E_list = []
+        for num in range(1,6):
+            #print "num = %d" % num
+            grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(num))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+            dist_init_pick = fuf.calc_dist(init_pose.pose.position.x, init_pose.pose.position.y, init_pose.pose.position.z,
+                                           grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z)
+            e1_dist = fuf.calc_e_dist(dist_init_pick, dist_min_init_pick, dist_max_init_pick )
+
+            init_deg_list = fuf.find_IK(init_pose, end_effector_link, right_arm)  #７軸の角度が入ってる (deg)
+            pick_deg_list = fuf.find_IK(grasp_pose, end_effector_link, right_arm)
+            e1_deg = fuf.calc_e_deg7(init_deg_list, pick_deg_list)
+
+            # p = False
+            # while not p:  #ikが見つかるまで、繰り返す
+            #     p = right_arm.set_joint_value_target(grasp_pose, end_effector_link)
+            # print "joint value  from ik"
+            # print p
+            # print right_arm.get_joint_value_target()
+
+
+            #e1_deg = fuf.calc_e_deg(init_roll,init_pitch,init_yaw,grasp_roll, grasp_pitch, grasp_yaw) #rpyを全部足しこんだもの
+            E1 = 0.3*e1_dist + 0.7*e1_deg
+            print "e1_dist =  %f" %e1_dist
+            print "e1_deg  =  %f" %e1_deg
+            print "E1  = %f" %E1
+
+            dist_pick_place = fuf.calc_dist(grasp_pose.pose.position.x, grasp_pose.pose.position.y, grasp_pose.pose.position.z,
+                                            place_pose.pose.position.x, place_pose.pose.position.y, place_pose.pose.position.z)
+            e2_dist = fuf.calc_e_dist(dist_pick_place, dist_min_pick_place, dist_max_pick_place)
+
+            place_deg_list = fuf.find_IK(place_pose, end_effector_link, right_arm)
+            e2_deg = fuf.calc_e_deg7(pick_deg_list, place_deg_list)
+
+            E2 = 0.3*e2_dist + 0.7*e2_deg
+            print "e2_dist =  %f" %e2_dist
+            print "e2_deg  =  %f" %e2_deg
+            print "E2  = %f" %E2
+
+            E = E1 + E2
+
+            tp =(num, E) #タプルをつくってリストにぶっこむ
+            E_list.append(tp)
+            print "E = %f" % E
+            print E_list
+
+        E_list = sorted(E_list, key = lambda x:x[1], reverse = True)
+        print "----------  E_list -----------"
+        print E_list
+        print E_list[0][0]
+
+        choosed_pose_list = []   #つかめる姿勢かつ評価がいい順にならぶ　入るのはposeのid
+        #choosed_pose_list = fuf.choose_pose(ok_pose_re_0,E_list)
+        choosed_pose_list = fuf.choose_pose(ok_pose_idlist,E_list)
+
+        print "choosed list "
+        print choosed_pose_list
+
+        grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(choosed_pose_list[0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+
+        #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = eval('fuf.grasp_pose_'+str(E_list[0][0]))(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+        #grasp_pose, grasp_roll, grasp_pitch, grasp_yaw = fuf.grasp_pose_4(target_pose.pose.position.x,target_pose.pose.position.y,target_pose.pose.position.z)
+
+        # right_arm.set_pose_target(target_pose, end_effector_link)
+        # right_arm.go()
+        # print "===== set pose target ======="
+        # print " get cuurent joint "
+        # print right_arm.get_current_joint_values()
+        # print " get joint value target "
+        # print right_arm.get_joint_value_target()
+        # rospy.sleep(3)
+
+
+        # right_arm.set_joint_value_target(target_pose, end_effector_link)
+        # right_arm.go()
+        # print "===== set joint value target  ======="
+        # print " get cuurent joint "
+        # print right_arm.get_current_joint_values()
+        # print " get joint value target "
+        # print right_arm.get_joint_value_target()
+
+        #joint_positions = [-0.2109587991228755, 0.6748677438425055, -0.37672985083633426, 0.6108336739791288, -0.23917114662678646, -1.6158254911883256, 0.5652131601423924]
+        #joint_positions = [-0.13796497631186252, 0.4428416445747007, -0.3637849503885936, 0.2747198389029563, -0.1546085992064018, -1.4299920016570258, 0.4911570240154483]
+
+        # right_arm.set_joint_value_target(joint_positions)
+        # right_arm.go()
+        # print " ======= arm gone ======="
+        # print right_arm.get_joint_value_target()
+        # print right_arm.get_current_joint_values()
+        # rospy.sleep(3)
+
 
 
         # Shift the grasp pose by half the width of the target to center it  真ん中でつかむため
@@ -466,9 +548,9 @@ class MoveItDemo:
         # Generate a grasp for each pitch and yaw angle
         for y in yaw_vals:
             for p in pitch_vals:
-                for r in roll_vals:
+                #for r in roll_vals:
                     # Create a quaternion from the Euler angles (roll, pitch, yaw)
-                    q = quaternion_from_euler(r, p, y)
+                    q = quaternion_from_euler(roll, p, y)  # r or roll
 
                     # Set the grasp pose orientation accordingly
                     g.grasp_pose.pose.orientation.x = q[0]
@@ -522,16 +604,16 @@ class MoveItDemo:
         places = []
 
         # Generate a place pose for each angle and translation
-        for y in yaw_vals:
+        for ya in yaw_vals:
             for p in pitch_vals:
-                #for r in roll_vals:
+                for r in roll_vals:
                     for y in y_vals:
                         for x in x_vals:
                             place.pose.position.x = init_pose.pose.position.x + x
                             place.pose.position.y = init_pose.pose.position.y + y
 
                             # Create a quaternion from the Euler angles
-                            q = quaternion_from_euler(roll, p, y)
+                            q = quaternion_from_euler(r, p, ya) #r or roll
 
                             # Set the place pose orientation accordingly
                             place.pose.orientation.x = q[0]

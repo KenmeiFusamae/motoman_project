@@ -183,82 +183,213 @@ M = eulerAnglesToRotationMatrix(theta)
 l = rotationMatrixToEulerAngles(M)
 print M
 print "^^^^^^^^^^^^^^^^^^^^^^^^^^"
-print "rzyx"
+print "rzyx Rt"
 Rt= tf.transformations.euler_matrix(math.pi/2,0,0,'rzyx')
 Rtlist = tf.transformations.euler_from_matrix(Rt,'rzyx')
 print Rt
 print np.rad2deg(Rtlist)
 print "~~~~~~~~~~~~~~~~~~~~~~~~"
-print "szyx"
-Rh = tf.transformations.euler_matrix(0, 0, math.pi,'rzyx')
+print "rzyx  Rh"
+Rh = tf.transformations.euler_matrix(0, 0, -math.pi/2,'rzyx')
 Rhlist = tf.transformations.euler_from_matrix(Rh,'rzyx')
 print Rh
 print np.rad2deg(Rhlist)
-
+print "============================="
 H2 = Rh.dot(Rt)
 H2list = list(tf.transformations.euler_from_matrix(H2,'rzyx'))
-print "rad " + str(H2list)
-# print "degree " + str(np.rad2deg(H2list))
-# print np.deg2rad(np.round(np.rad2deg(H2list), 5))
-rrr =  np.round(H2list,5)
-print "round "  + str(rrr)
-print "rad " + str(np.deg2rad(np.rad2deg(rrr)))
-
-for i in  range(len(H2list)):
-    if  -0.01 < H2list[i] < 0.01:
-        H2list[i] = 0
-print "clearn list " + str(H2list)
+print "rad " + str(np.rad2deg(H2list))
 
 
-li = [0,2,0,0,5,0]
-li_uniq = []
-for x in li:
-    if x not in li_uniq:
-        li_uniq.append(x)
-print li_uniq
-li_uniq.remove(0)
-print li_uniq
+# rrr =  np.round(H2list,5)
+# print "round "  + str(rrr)
+# print "rad " + str(np.deg2rad(np.rad2deg(rrr)))
+#
+# for i in  range(len(H2list)):
+#     if  -0.01 < H2list[i] < 0.01:
+#         H2list[i] = 0
+# print "clearn list " + str(H2list)
+
+def rotation_direc_vector(Rti, Rtj, Rtk, Rhi, Rhj, Rhk, r_or_s):
+    v0 = np.array([1,0,0,1])
+    v1 = v0.transpose()
+
+    w0 = np.array([0,0,1,1])
+    w1 = w0.transpose()
+    #print v1
+    #                                   yaw , pitch, roll
+    Rt= tf.transformations.euler_matrix(Rti, Rtj, Rtk, r_or_s)
+    Rtlist = tf
+    Rh = tf.transformations.euler_matrix(Rhi, Rhj, Rhk,r_or_s)
+    Rhlist = list(tf.transformations.euler_from_matrix(Rh,r_or_s))
+    # print Rh# v1 = tf.transformations.unit_vector(v0)
+    # print tf.transformations.euler_from_matrix(Rh,'rzyx')
+    R = Rt.dot(Rh)
+
+    v2 = Rh.dot(v1)
+    v3 = Rt.dot(v2)
+    v3t = v3.transpose()
+    v3list = v3t.tolist()
+    # print "======= direction vector ======="
+    print tf.transformations.euler_from_matrix(R,r_or_s)
+
+    w2 = Rh.dot(w1)
+    w3 = Rt.dot(w2)
+    w3t = w3.transpose()
+    w3list = w3t.tolist()
+    print w3list
+
+    for i in range(len(v3list)):
+        if -0.01 < v3list[i] < 0.01:
+            v3list[i] = 0
+        if -0.01 < w3list[i] < 0.01:
+            w3list[i] = 0
+    print v3list
+    print w3list
 
 
-print "====== list test ========"
-li_all = [3,4,1,2,6,5]
-t_list = [2,5]
-for i in li_all:
-    if i not in t_list:
-        li_all.remove(i)
-print li_all
-print t_list
-print "======= list test youso ver ======="
-li_all2 = [3,4,1,2,6,5]
-li_ture = []
-for i in range(len(li_all2)):
-    if  li_all2[i]  in t_list:
-        li_ture.append(li_all2[i])
-print li_ture
+print "======== grasp 1 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, math.pi/2, 0, 'sxyz')
 
-print "======== list tuple が絡んだとき ========"
-tp1 = (1,434)
-tp2 = (2,23424)
-tp3 = (3,554)
-tp4 = (4, 4334)
-tp5 = (5, 212)
-tp6 = (6, 870)
-E_list = []
-E_list.append(tp3)
-E_list.append(tp4)
-E_list.append(tp1)
-E_list.append(tp2)
-E_list.append(tp6)
-E_list.append(tp5)
-print E_list
-print E_list[1][0]
-print E_list[1][1]
-print len(E_list)
-get_list = []
-for i in range(len(E_list)):
-    if E_list[i][0] in t_list:
-        get_list.append(E_list[i][0])
-print "get list "
-print get_list
+print "======== grasp 2 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, math.pi/2, math.pi/2, 'sxyz')
 
-print "======== ik test ========="
+print "======== grasp 3 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, math.pi/2, 'sxyz')
+
+print "======== grasp 4 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, 0, 'sxyz')
+
+print "======== grasp 5 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, -math.pi/2, 'sxyz')
+
+print "======== grasp 6 ============"
+rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, math.pi, 'sxyz')
+
+z= -1
+if 0 < z:
+    print "positive"
+elif z < 0:
+    print "minasu"
+
+# grasp_pose = PoseStamped()
+# grasp_pose.header.frame_id = REFERENCE_FRAME
+# grasp_pose.pose.position.x = 0+ 0.02
+# grasp_pose.pose.position.y = 0
+# grasp_pose.pose.position.z = 0
+# roll = math.pi/2
+# pitch = 0
+# yaw =  0
+# tar_q = tf.transformations.quaternion_from_euler(roll, pitch, yaw)
+# grasp_pose.pose.orientation.x = tar_q[0]
+# grasp_pose.pose.orientation.y = tar_q[1]
+# grasp_pose.pose.orientation.z = tar_q[2]
+# grasp_pose.pose.orientation.w = tar_q[3]
+# print "-------  none -----------"
+# print grasp_pose.pose.orientation.x
+# print grasp_pose.pose.orientation.y
+# print grasp_pose.pose.orientation.z
+# print grasp_pose.pose.orientation.w
+#
+# grasp_pose = PoseStamped()
+# grasp_pose.header.frame_id = REFERENCE_FRAME
+# grasp_pose.pose.position.x = 0 + 0.02
+# grasp_pose.pose.position.y = 0
+# grasp_pose.pose.position.z = 0
+# roll = math.pi/2
+# pitch = 0
+# yaw =  0
+# tar_q = tf.transformations.quaternion_from_euler(yaw, pitch, roll,'rzyx')
+# grasp_pose.pose.orientation.x = tar_q[0]
+# grasp_pose.pose.orientation.y = tar_q[1]
+# grasp_pose.pose.orientation.z = tar_q[2]
+# grasp_pose.pose.orientation.w = tar_q[3]
+# print "------- rzyx  -----------"
+# print grasp_pose.pose.orientation.x
+# print grasp_pose.pose.orientation.y
+# print grasp_pose.pose.orientation.z
+# print grasp_pose.pose.orientation.w
+
+
+# print "Rt v0"
+# #print np.inner(Rt,v1)
+#
+# print "Rh Rt v0"
+# #print Rh.dot(Rt).dot(v0)
+#
+# R = Rh.dot(Rt)
+#
+# v2 = R.dot(v1)
+# print "Rh Rt・ v1"
+# print v2
+#
+# print "Rt Rh Rt v1"
+#
+# print Rt.dot(v2)
+
+
+
+# print "======= numpy test ======="
+# a = np.array([[1,2],[3,4]])
+# b = np.array([1,2])
+# print a
+# print b
+# print "dot "
+# print np.dot(a,b.transpose())
+# print "a.dot(b)"
+# print a.dot(b)
+# print "inner"
+# print np.inner(a,b)
+
+
+
+
+# li = [0,2,0,0,5,0]
+# li_uniq = []
+# for x in li:
+#     if x not in li_uniq:
+#         li_uniq.append(x)
+# print li_uniq
+# li_uniq.remove(0)
+# print li_uniq
+#
+#
+# print "====== list test ========"
+# li_all = [3,4,1,2,6,5]
+# t_list = [2,5]
+# for i in li_all:
+#     if i not in t_list:
+#         li_all.remove(i)
+# print li_all
+# print t_list
+# print "======= list test youso ver ======="
+# li_all2 = [3,4,1,2,6,5]
+# li_ture = []
+# for i in range(len(li_all2)):
+#     if  li_all2[i]  in t_list:
+#         li_ture.append(li_all2[i])
+# print li_ture
+#
+# print "======== list tuple が絡んだとき ========"
+# tp1 = (1,434)
+# tp2 = (2,23424)
+# tp3 = (3,554)
+# tp4 = (4, 4334)
+# tp5 = (5, 212)
+# tp6 = (6, 870)
+# E_list = []
+# E_list.append(tp3)
+# E_list.append(tp4)
+# E_list.append(tp1)
+# E_list.append(tp2)
+# E_list.append(tp6)
+# E_list.append(tp5)
+# print E_list
+# print E_list[1][0]
+# print E_list[1][1]
+# print len(E_list)
+# get_list = []
+# for i in range(len(E_list)):
+#     if E_list[i][0] in t_list:
+#         get_list.append(E_list[i][0])
+# print "get list "
+# print get_list

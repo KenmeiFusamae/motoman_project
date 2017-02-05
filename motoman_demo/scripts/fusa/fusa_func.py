@@ -183,13 +183,56 @@ def calc_e_deg7(start_list, end_list):
     deg = 0
     for i in range(len(start_list)):
         d = abs(end_list[i] - start_list[i])
-        
+
         deg += d
     e_deg = 1 - (deg / (7*180))
     return e_deg
 
 
+def rotation_direc_vector(Rti, Rtj, Rtk, Rhi, Rhj, Rhk, r_or_s):
+    v0 = np.array([1,0,0,1])
+    v1 = v0.transpose()
 
+    w0 = np.array([0,0,1,1])
+    w1 = w0.transpose()
+    #print v1
+    #                                   yaw , pitch, roll
+    Rt= tf.transformations.euler_matrix(Rti, Rtj, Rtk, r_or_s)
+    Rtlist = tf
+    Rh = tf.transformations.euler_matrix(Rhi, Rhj, Rhk,r_or_s)
+    Rhlist = list(tf.transformations.euler_from_matrix(Rh,r_or_s))
+    # print Rh# v1 = tf.transformations.unit_vector(v0)
+    # print tf.transformations.euler_from_matrix(Rh,'rzyx')
+    R = Rt.dot(Rh)
+
+    v2 = Rh.dot(v1)
+    v3 = Rt.dot(v2)
+    v3t = v3.transpose()
+    v3list = v3t.tolist()
+
+    w2 = Rh.dot(w1)
+    w3 = Rt.dot(w2)
+    w3t = w3.transpose()
+    w3list = w3t.tolist()
+
+    for i in range(len(v3list)):
+        if -0.01 < v3list[i] < 0.01:
+            v3list[i] = 0
+        if -0.01 < w3list[i] < 0.01:
+            w3list[i] = 0
+
+    return v3list, w3list
+
+
+def extraction_direc_vector(num, v, w):
+    if 0 < v[2]:
+        return 0
+    elif v[2] == 0 and  w[0] is not 0:
+        return 0
+    elif v[2] == 0 and  w[1] is not 0:
+        return 0
+    else:
+        return num
 
 
 def extraction_pose(num, rpy_list):
@@ -205,7 +248,7 @@ def choose_pose(can_list, e_list):
             get_list.append(e_list[i][0])
     return get_list
 
-def find_IK(Pose_stamp, end_effector_link,right_arm):
+def find_IK(Pose_stamp, end_effector_link,right_arm): #moveitのset_joint_value_targetが返り値を返すように書き換えてる
     p = False
     while not p:  #ikが見つかるまで、繰り返す
         p = right_arm.set_joint_value_target(Pose_stamp, end_effector_link)
