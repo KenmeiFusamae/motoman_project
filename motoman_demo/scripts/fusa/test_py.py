@@ -238,13 +238,13 @@ def rotation_direc_vector(Rti, Rtj, Rtk, Rhi, Rhj, Rhk, r_or_s):
     w3list = w3t.tolist()
     print w3list
 
-    for i in range(len(v3list)):
-        if -0.01 < v3list[i] < 0.01:
-            v3list[i] = 0
-        if -0.01 < w3list[i] < 0.01:
-            w3list[i] = 0
-    print v3list
-    print w3list
+    # for i in range(len(v3list)):
+    #     if -0.01 < v3list[i] < 0.01:
+    #         v3list[i] = 0
+    #     if -0.01 < w3list[i] < 0.01:
+    #         w3list[i] = 0
+    # print v
+    # print w3list
 
 
 print "======== grasp 1 ============"
@@ -265,8 +265,8 @@ rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, -math.pi/2, 'sxyz')
 print "======== grasp 6 ============"
 rotation_direc_vector(math.pi/2, 0 , 0,  0, 0, math.pi, 'sxyz')
 
-z= -1
-if 0 < z:
+z= 1
+if  z:
     print "positive"
 elif z < 0:
     print "minasu"

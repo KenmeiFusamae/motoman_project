@@ -90,6 +90,7 @@ class MoveItDemo:
         box2_id = 'box2'
         target_id = 'target'
         tool_id = 'tool'
+        work_space_id = 'work_space'
 
         # Remove leftover objects from a previous run
         scene.remove_world_object(table_id)
@@ -97,6 +98,7 @@ class MoveItDemo:
         scene.remove_world_object(box2_id)
         scene.remove_world_object(target_id)
         scene.remove_world_object(tool_id)
+        scene.remove_world_object(work_space_id)
 
         # Remove any attached objects from a previous session
         scene.remove_attached_object(GRIPPER_FRAME, target_id)
@@ -145,9 +147,19 @@ class MoveItDemo:
         table_size = [0.5, 0.7, 0.01]
         box1_size = [0.1, 0.05, 0.05]
         box2_size = [0.05, 0.05, 0.15]
+        work_space_size = [0.5, 0.7, 0.4]
 
         # Set the target size [l, w, h]
         target_size = [0.04, 0.03, 0.12] #0.04, 0.03, 0.12  #0.02, 0.02, 0.02
+
+
+        work_space_pose = PoseStamped()
+        work_space_pose.header.frame_id = REFERENCE_FRAME
+        work_space_pose.pose.position.x = 0.4 +0.1
+        work_space_pose.pose.position.y = 0.0
+        work_space_pose.pose.position.z = table_ground + table_size[2] / 2.0 + work_space_size[2]/2
+        work_space_pose.pose.orientation.w = 1.0
+        # scene.add_box(work_space_id, work_space_pose, work_space_size)
 
         # Add a table top and two boxes to the scene
         table_pose = PoseStamped()
@@ -208,6 +220,7 @@ class MoveItDemo:
         self.setColor(table_id, 0.4, 0.4, 0.4, 1.0)
         self.setColor(box1_id, 0.8, 0.4, 0, 1.0)
         self.setColor(box2_id, 0.8, 0.4, 0, 1.0)
+        self.setColor(work_space_id,0,0,0.4,0.5)
         # Make the target yellow
         self.setColor(target_id, 0.9, 0.9, 0, 1.0)
         # Send the colors to the planning scene
